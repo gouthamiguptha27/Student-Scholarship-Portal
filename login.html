@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Student Scholarship Management Portal</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/register.css">
+    <style>
+        .login-tabs {
+            display: flex;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 25px;
+        }
+        .login-tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 15px;
+            font-weight: 700;
+            color: #64748b;
+            cursor: pointer;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+        .login-tab-btn.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+        .demo-credentials-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 14px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 12.5px;
+            color: #334155;
+            line-height: 1.5;
+        }
+        .role-pill {
+            display: inline-block;
+            cursor: pointer;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin: 2px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            transition: all 0.15s;
+        }
+        .role-pill:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+            background: #eff6ff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <nav class="navbar">
+            <h2>🎓 Scholarship Portal</h2>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="scholarships.html">Scholarships</a>
+                <a href="register.html">Register</a>
+                <a href="login.html" class="active">Login</a>
+                <a href="admin.html" style="color: #f59e0b; font-weight: bold;">Admin</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="form-section" style="max-width: 480px;">
+        <!-- Tab Switcher -->
+        <div class="login-tabs">
+            <button class="login-tab-btn active" id="tabStudentBtn" onclick="switchLoginTab('student')">👨‍🎓 Student Login</button>
+            <button class="login-tab-btn" id="tabStaffBtn" onclick="switchLoginTab('staff')">🏛️ Institutional Approvers</button>
+        </div>
+
+        <div id="loginAlert" style="display: none; padding: 12px; margin-bottom: 15px; border-radius: 6px; font-weight: 500; font-size: 14px;"></div>
+
+        <!-- 1. STUDENT LOGIN FORM -->
+        <div id="studentLoginContainer">
+            <h2 style="font-size: 20px; margin-bottom: 15px;">Student Portal Sign In</h2>
+            <form id="studentLoginForm">
+                <label for="login-email">Registered Email Address</label>
+                <input type="email" id="login-email" placeholder="e.g. student@example.com" required>
+
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" placeholder="Enter your password" required>
+
+                <button type="submit" class="btn" id="loginStudentBtn" style="width: 100%; margin-top: 20px;">Sign In as Student &rarr;</button>
+
+                <div style="margin-top: 15px; text-align: center; color: #666; font-size: 14px;">
+                    Don't have an account? <a href="register.html" style="color: #2563eb; font-weight: bold; text-decoration: none;">Register here</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- 2. STAFF / APPROVER LOGIN FORM -->
+        <div id="staffLoginContainer" style="display: none;">
+            <h2 style="font-size: 20px; margin-bottom: 15px;">Approver & Staff Login</h2>
+            <p style="font-size: 13px; color: #64748b; margin-top: -10px; margin-bottom: 15px;">
+                Access designated dashboard for Scholarship Officer, HOD, Principal, or Admin.
+            </p>
+
+            <form id="staffLoginForm">
+                <label for="staff-role">Institutional Role</label>
+                <select id="staff-role" required>
+                    <option value="officer">Level 1: Scholarship Officer</option>
+                    <option value="hod">Level 2: Faculty / Department HOD</option>
+                    <option value="principal">Level 3: Principal (Final Approver)</option>
+                    <option value="admin">Level 4: Central Administrator</option>
+                </select>
+
+                <label for="staff-email">Official Email</label>
+                <input type="email" id="staff-email" value="officer@scholarship.gov.in" required>
+
+                <label for="staff-password">Password</label>
+                <input type="password" id="staff-password" value="officer123" required>
+
+                <button type="submit" class="btn" id="loginStaffBtn" style="width: 100%; margin-top: 20px; background: #4338ca;">Sign In to Approver Portal &rarr;</button>
+            </form>
+
+            <!-- Quick Auto-Fill Credentials for Review -->
+            <div class="demo-credentials-box">
+                <div style="font-weight: bold; margin-bottom: 6px; color: #1e293b;">⚡ Quick Role Switcher (Click to fill):</div>
+                <div>
+                    <span class="role-pill" onclick="fillStaff('officer', 'officer@scholarship.gov.in', 'officer123')">Scholarship Officer</span>
+                    <span class="role-pill" onclick="fillStaff('hod', 'hod@scholarship.gov.in', 'hod123')">Department HOD</span>
+                    <span class="role-pill" onclick="fillStaff('principal', 'principal@scholarship.gov.in', 'principal123')">Principal</span>
+                    <span class="role-pill" onclick="fillStaff('admin', 'admin@scholarship.gov.in', 'admin123')">Administrator</span>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <footer>
+        <p>© 2026 Student Scholarship Management Portal</p>
+    </footer>
+
+    <script>
+        const studentLoginForm = document.getElementById("studentLoginForm");
+        const staffLoginForm = document.getElementById("staffLoginForm");
+        const loginAlert = document.getElementById("loginAlert");
+
+        function switchLoginTab(type) {
+            document.getElementById("studentLoginContainer").style.display = type === "student" ? "block" : "none";
+            document.getElementById("staffLoginContainer").style.display = type === "staff" ? "block" : "none";
+            document.getElementById("tabStudentBtn").classList.toggle("active", type === "student");
+            document.getElementById("tabStaffBtn").classList.toggle("active", type === "staff");
+            loginAlert.style.display = "none";
+        }
+
+        function fillStaff(role, email, pwd) {
+            document.getElementById("staff-role").value = role;
+            document.getElementById("staff-email").value = email;
+            document.getElementById("staff-password").value = pwd;
+        }
+
+        // Student Login
+        studentLoginForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const email = document.getElementById("login-email").value.trim();
+            const password = document.getElementById("login-password").value;
+            const btn = document.getElementById("loginStudentBtn");
+
+            btn.disabled = true;
+            btn.textContent = "Verifying...";
+            loginAlert.style.display = "none";
+
+            try {
+                const response = await fetch("/api/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSuccessAlert(`Welcome back, ${data.student.name}! Redirecting to Dashboard...`);
+                    localStorage.setItem("student", JSON.stringify(data.student));
+                    if (data.token) localStorage.setItem("studentToken", data.token);
+
+                    setTimeout(() => {
+                        window.location.href = "dashboard.html";
+                    }, 1000);
+                } else {
+                    showErrorAlert(data.message || "Invalid email or password.");
+                    btn.disabled = false;
+                    btn.textContent = "Sign In as Student \u2192";
+                }
+            } catch (err) {
+                showErrorAlert("Server connection error. Please ensure the backend is running.");
+                btn.disabled = false;
+                btn.textContent = "Sign In as Student \u2192";
+            }
+        });
+
+        // Staff / Approver Login
+        staffLoginForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const role = document.getElementById("staff-role").value;
+            const email = document.getElementById("staff-email").value.trim();
+            const password = document.getElementById("staff-password").value;
+            const btn = document.getElementById("loginStaffBtn");
+
+            btn.disabled = true;
+            btn.textContent = "Authenticating...";
+            loginAlert.style.display = "none";
+
+            try {
+                const response = await fetch("/api/auth/staff-login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ role, email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSuccessAlert(`Authenticated as ${data.user.role.toUpperCase()} (${data.user.name})! Opening dashboard...`);
+                    localStorage.setItem("staffUser", JSON.stringify(data.user));
+                    localStorage.setItem("staffToken", data.token);
+
+                    // If admin, also store adminAuth for compatibility
+                    if (data.user.role === "admin") {
+                        localStorage.setItem("adminAuth", JSON.stringify(data.user));
+                    }
+
+                    setTimeout(() => {
+                        if (data.user.role === "officer") window.location.href = "officer.html";
+                        else if (data.user.role === "hod") window.location.href = "hod.html";
+                        else if (data.user.role === "principal") window.location.href = "principal.html";
+                        else if (data.user.role === "admin") window.location.href = "admin.html";
+                    }, 1000);
+                } else {
+                    showErrorAlert(data.message || "Invalid credentials for selected role.");
+                    btn.disabled = false;
+                    btn.textContent = "Sign In to Approver Portal \u2192";
+                }
+            } catch (err) {
+                showErrorAlert("Server connection error.");
+                btn.disabled = false;
+                btn.textContent = "Sign In to Approver Portal \u2192";
+            }
+        });
+
+        function showSuccessAlert(msg) {
+            loginAlert.style.display = "block";
+            loginAlert.style.background = "#dcfce7";
+            loginAlert.style.color = "#166534";
+            loginAlert.style.border = "1px solid #86efac";
+            loginAlert.textContent = msg;
+        }
+
+        function showErrorAlert(msg) {
+            loginAlert.style.display = "block";
+            loginAlert.style.background = "#fee2e2";
+            loginAlert.style.color = "#991b1b";
+            loginAlert.style.border = "1px solid #fca5a5";
+            loginAlert.textContent = msg;
+        }
+    </script>
+
+</body>
+
+</html>

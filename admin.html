@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator Portal - Scholarship & Disbursement Management</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/register.css">
+    <style>
+        .admin-container {
+            max-width: 1280px;
+            margin: 30px auto;
+            padding: 0 20px 40px 20px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            text-align: center;
+        }
+        .stat-card h4 {
+            margin: 0;
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stat-card .num {
+            font-size: 30px;
+            font-weight: 700;
+            margin: 8px 0;
+        }
+        .tab-nav {
+            display: flex;
+            gap: 10px;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 25px;
+        }
+        .tab-btn {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 15px;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+        .filter-bar {
+            background: #ffffff;
+            padding: 16px 20px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .filter-bar input, .filter-bar select {
+            padding: 8px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .table-responsive {
+            background: #ffffff;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            overflow-x: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            text-align: left;
+        }
+        th {
+            background: #f8fafc;
+            color: #334155;
+            font-weight: 600;
+            padding: 14px 16px;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            vertical-align: middle;
+        }
+        tr:hover {
+            background: #f8fafc;
+        }
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            margin: 2px;
+        }
+        .btn-disburse {
+            background: #0f766e;
+            color: #ffffff;
+        }
+        .btn-pending-pay {
+            background: #7e22ce;
+            color: #ffffff;
+        }
+        .doc-chip {
+            display: inline-block;
+            padding: 2px 6px;
+            background: #eff6ff;
+            color: #2563eb;
+            border-radius: 4px;
+            font-size: 11px;
+            text-decoration: none;
+            margin: 2px;
+            border: 1px solid #bfdbfe;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <h2>🛡️ Administrator Portal <span style="font-size: 12px; background: #fef3c7; color: #b45309; padding: 3px 8px; border-radius: 12px; vertical-align: middle;">Central Administration</span></h2>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="scholarships.html">Public Catalog</a>
+                <a href="officer.html">Officer View</a>
+                <a href="hod.html">HOD View</a>
+                <a href="principal.html">Principal View</a>
+                <a href="admin.html" class="active">Admin Dashboard</a>
+                <button id="adminLogoutBtn" style="display: none; background: transparent; border: 1px solid #cbd5e1; color: #334155; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Logout</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- SECTION 1: ADMIN LOGIN VIEW -->
+    <div id="adminLoginSection" class="form-section" style="max-width: 450px; margin: 60px auto; display: block;">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div style="font-size: 40px;">🔐</div>
+            <h2 style="margin-top: 10px;">Administrator Login</h2>
+            <p style="color: #64748b; font-size: 14px;">Authorized system administrators only.</p>
+        </div>
+
+        <div id="loginAlert" style="display: none; padding: 10px; margin-bottom: 15px; border-radius: 6px; font-size: 14px;"></div>
+
+        <form id="adminLoginForm">
+            <label for="adminEmail">Admin Email</label>
+            <input type="email" id="adminEmail" value="admin@scholarship.gov.in" placeholder="admin@scholarship.gov.in" required>
+
+            <label for="adminPassword">Admin Password</label>
+            <input type="password" id="adminPassword" value="admin123" placeholder="Enter password" required>
+
+            <button type="submit" class="btn" style="width: 100%; margin-top: 15px;" id="btnLoginAdmin">Access Admin Dashboard</button>
+        </form>
+
+        <p style="text-align: center; margin-top: 20px; font-size: 13px; color: #64748b;">
+            Default Credentials: <code>admin@scholarship.gov.in</code> / <code>admin123</code>
+        </p>
+    </div>
+
+    <!-- SECTION 2: ADMIN MANAGEMENT DASHBOARD -->
+    <div id="adminDashboardSection" class="admin-container" style="display: none;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <h1 style="margin: 0; font-size: 24px; color: #1e3a8a;">Central Scholarship & Disbursement Management</h1>
+                <p style="margin: 4px 0 0 0; color: #64748b; font-size: 14px;">Monitor all 4 approval levels, manage scholarship schemes, and process fund disbursement.</p>
+            </div>
+            <div>
+                <button class="btn" id="refreshBtn" style="padding: 8px 16px; font-size: 13px; background: #3b82f6;">🔄 Refresh Records</button>
+            </div>
+        </div>
+
+        <!-- System-wide Metrics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h4>Total Applications</h4>
+                <div class="num" id="statTotal" style="color: #0f172a;">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Level 1 (Officer)</h4>
+                <div class="num" id="statOfficer" style="color: #2563eb;">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Level 2 (HOD)</h4>
+                <div class="num" id="statHod" style="color: #b45309;">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Level 3 (Principal)</h4>
+                <div class="num" id="statPrincipal" style="color: #7e22ce;">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Sanctioned / Approved</h4>
+                <div class="num" id="statApproved" style="color: #16a34a;">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Disbursed / Paid</h4>
+                <div class="num" id="statPaid" style="color: #0f766e;">0</div>
+            </div>
+        </div>
+
+        <div id="adminNotice" style="display: none; padding: 12px 16px; border-radius: 6px; margin-bottom: 15px; font-weight: 500;"></div>
+
+        <!-- Navigation Tabs -->
+        <div class="tab-nav">
+            <button class="tab-btn active" id="tabApplicationsBtn" onclick="switchTab('applicationsTab')">📋 Applications & Approvals</button>
+            <button class="tab-btn" id="tabScholarshipsBtn" onclick="switchTab('scholarshipsTab')">🎓 Scholarship Scheme Management</button>
+        </div>
+
+        <!-- TAB 1: APPLICATIONS & APPROVALS -->
+        <div id="applicationsTab">
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <input type="text" id="searchInput" placeholder="Search by Tracking ID, Name, College, or Scheme..." style="flex: 1; max-width: 400px;">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <label for="statusFilter" style="margin: 0; font-weight: 600; font-size: 13px;">Workflow Stage:</label>
+                    <select id="statusFilter">
+                        <option value="ALL">All Stages (All Applications)</option>
+                        <option value="Submitted">Submitted (Level 1)</option>
+                        <option value="Pending at HOD">Pending at HOD (Level 2)</option>
+                        <option value="Pending at Principal">Pending at Principal (Level 3)</option>
+                        <option value="Approved">Approved / Sanctioned</option>
+                        <option value="Payment Pending">Payment Pending</option>
+                        <option value="Paid">Paid (Funds Disbursed)</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Applications Table -->
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tracking ID</th>
+                            <th>Student Details</th>
+                            <th>Scholarship</th>
+                            <th>Academic %</th>
+                            <th>Income</th>
+                            <th>Documents</th>
+                            <th>Workflow Status</th>
+                            <th>Admin / Disbursement Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applicationsTableBody">
+                        <tr>
+                            <td colspan="9" style="text-align: center; padding: 40px; color: #64748b;">
+                                Loading applications from database...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 2: SCHOLARSHIP SCHEME MANAGEMENT (CRUD) -->
+        <div id="scholarshipsTab" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div>
+                    <h2 style="margin: 0; font-size: 20px; color: #1e3a8a;">Active Scholarship Schemes (MySQL Catalog)</h2>
+                    <p style="margin: 4px 0 0 0; color: #64748b; font-size: 14px;">Add, update, or remove scholarship schemes available to students.</p>
+                </div>
+                <button class="btn" style="background: #16a34a; padding: 10px 20px; font-size: 14px;" onclick="openAddScholarshipModal()">➕ Add New Scholarship</button>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Scheme ID</th>
+                            <th>Scheme Name</th>
+                            <th>Category</th>
+                            <th>Amount (₹)</th>
+                            <th>Eligibility Criteria</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scholarshipsTableBody">
+                        <tr><td colspan="7" style="text-align: center; padding: 30px;">Loading scholarships...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SCHOLARSHIP CREATE/EDIT MODAL -->
+    <div class="modal-overlay" id="scholarshipModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="schModalTitle">Add New Scholarship Scheme</h3>
+                <button class="modal-close-btn" onclick="closeModal('scholarshipModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="scholarshipForm">
+                    <label for="schId">Scheme ID (Unique, e.g. SCH004) *</label>
+                    <input type="text" id="schId" placeholder="SCH004" required>
+
+                    <label for="schName">Scheme Name *</label>
+                    <input type="text" id="schName" placeholder="e.g. Women in Engineering Scholarship" required>
+
+                    <label for="schCategory">Category *</label>
+                    <select id="schCategory" required>
+                        <option value="Merit Based">Merit Based</option>
+                        <option value="Need Based">Need Based</option>
+                        <option value="State Scheme">State Scheme</option>
+                        <option value="Special Grant">Special Grant</option>
+                    </select>
+
+                    <label for="schAmount">Sanctioned Amount (₹ / year) *</label>
+                    <input type="number" id="schAmount" placeholder="40000" min="1000" step="500" required>
+
+                    <label for="schEligibility">Eligibility Criteria Description *</label>
+                    <input type="text" id="schEligibility" placeholder="e.g. Minimum 75% marks and female candidates" required>
+
+                    <label for="schDescription">Scheme Description</label>
+                    <textarea id="schDescription" rows="3" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 14px;" placeholder="Full details of scholarship coverage and objectives."></textarea>
+
+                    <label for="schStatus">Status *</label>
+                    <select id="schStatus">
+                        <option value="Active">Active (Accepting Applications)</option>
+                        <option value="Inactive">Inactive (Closed)</option>
+                    </select>
+
+                    <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" class="btn" style="background: #f1f5f9; color: #475569;" onclick="closeModal('scholarshipModal')">Cancel</button>
+                        <button type="submit" class="btn" style="background: #2563eb;" id="saveSchBtn">Save Scholarship Scheme</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- DISBURSEMENT MODAL -->
+    <div class="modal-overlay" id="disburseModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 style="color: #0f766e;">💳 Process Scholarship Fund Disbursement</h3>
+                <button class="modal-close-btn" onclick="closeModal('disburseModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="color: #475569; font-size: 14px; margin-bottom: 15px;">
+                    Disbursing scholarship funds for <strong id="disburseStudentName" style="color: #0f172a;"></strong> (<span id="disburseTrackingId"></span>).
+                </p>
+                <div style="background: #f0fdfa; border: 1px solid #99f6e4; padding: 14px; border-radius: 8px; margin-bottom: 15px; font-size: 13px;">
+                    <div><strong>Scheme:</strong> <span id="disburseSchName"></span></div>
+                    <div><strong>Current Status:</strong> <span id="disburseStatus" style="font-weight: bold; color: #059669;"></span></div>
+                </div>
+
+                <label style="font-weight: 600; font-size: 14px; display: block; margin-bottom: 6px;">Disbursement Status *</label>
+                <select id="disburseTargetStatus" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 12px; font-size: 14px;">
+                    <option value="Paid">Mark as Paid (Direct DBT Fund Transfer Complete)</option>
+                    <option value="Payment Pending">Queue for Treasury / Payment Pending</option>
+                </select>
+
+                <label style="font-weight: 600; font-size: 14px; display: block; margin-bottom: 6px;">Payment Reference / UTR Number</label>
+                <input type="text" id="paymentRefInput" placeholder="e.g. DBT-TXN-20261014-9988" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 12px; font-size: 14px;">
+
+                <label style="font-weight: 600; font-size: 14px; display: block; margin-bottom: 6px;">Disbursement Remarks</label>
+                <textarea id="disburseRemarksInput" rows="2" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 14px;" placeholder="e.g. Transferred scholarship funds to student registered bank account."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" style="background: #f1f5f9; color: #475569;" onclick="closeModal('disburseModal')">Cancel</button>
+                <button class="btn btn-disburse" id="confirmDisburseBtn" onclick="submitDisbursement()">Confirm Disbursement 💰</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUDIT HISTORY MODAL -->
+    <div class="modal-overlay" id="historyModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>📋 Complete 4-Level Approval History</h3>
+                <button class="modal-close-btn" onclick="closeModal('historyModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="historyTrackingBadge" style="font-family: monospace; font-size: 14px; font-weight: bold; color: #2563eb; margin-bottom: 15px;"></div>
+                <div class="audit-timeline" id="historyTimeline"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" style="background: #f1f5f9; color: #475569;" onclick="closeModal('historyModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Student Scholarship Management Portal - Admin Suite</p>
+    </footer>
+
+    <script>
+        const adminLoginSection = document.getElementById("adminLoginSection");
+        const adminDashboardSection = document.getElementById("adminDashboardSection");
+        const adminLoginForm = document.getElementById("adminLoginForm");
+        const loginAlert = document.getElementById("loginAlert");
+        const adminLogoutBtn = document.getElementById("adminLogoutBtn");
+        const applicationsTableBody = document.getElementById("applicationsTableBody");
+        const adminNotice = document.getElementById("adminNotice");
+        const refreshBtn = document.getElementById("refreshBtn");
+        const searchInput = document.getElementById("searchInput");
+        const statusFilter = document.getElementById("statusFilter");
+
+        let allApplications = [];
+        let allScholarships = [];
+        let activeDisburseApp = null;
+        let isEditingSch = false;
+
+        function checkAdminAuth() {
+            const admin = localStorage.getItem("adminAuth");
+            if (admin) {
+                adminLoginSection.style.display = "none";
+                adminDashboardSection.style.display = "block";
+                adminLogoutBtn.style.display = "inline-block";
+                loadDashboardData();
+            } else {
+                adminLoginSection.style.display = "block";
+                adminDashboardSection.style.display = "none";
+                adminLogoutBtn.style.display = "none";
+            }
+        }
+
+        adminLoginForm.addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const email = document.getElementById("adminEmail").value.trim();
+            const password = document.getElementById("adminPassword").value;
+            const btn = document.getElementById("btnLoginAdmin");
+
+            btn.disabled = true;
+            btn.textContent = "Authenticating...";
+
+            try {
+                const res = await fetch("/api/admin/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    localStorage.setItem("adminAuth", JSON.stringify(data.admin));
+                    if (data.token) localStorage.setItem("adminToken", data.token);
+                    checkAdminAuth();
+                } else {
+                    loginAlert.style.display = "block";
+                    loginAlert.style.background = "#fee2e2";
+                    loginAlert.style.color = "#991b1b";
+                    loginAlert.style.border = "1px solid #fca5a5";
+                    loginAlert.textContent = data.message || "Invalid admin credentials.";
+                    btn.disabled = false;
+                    btn.textContent = "Access Admin Dashboard";
+                }
+            } catch (err) {
+                loginAlert.style.display = "block";
+                loginAlert.style.background = "#fee2e2";
+                loginAlert.style.color = "#991b1b";
+                loginAlert.textContent = "Server connection error.";
+                btn.disabled = false;
+                btn.textContent = "Access Admin Dashboard";
+            }
+        });
+
+        adminLogoutBtn.addEventListener("click", () => {
+            localStorage.removeItem("adminAuth");
+            localStorage.removeItem("adminToken");
+            checkAdminAuth();
+        });
+
+        refreshBtn.addEventListener("click", () => {
+            loadDashboardData();
+            showNotice("Data refreshed from MySQL database.", "success");
+        });
+
+        searchInput.addEventListener("input", renderApplicationsTable);
+        statusFilter.addEventListener("change", renderApplicationsTable);
+
+        function switchTab(tabId) {
+            document.getElementById("applicationsTab").style.display = tabId === "applicationsTab" ? "block" : "none";
+            document.getElementById("scholarshipsTab").style.display = tabId === "scholarshipsTab" ? "block" : "none";
+            document.getElementById("tabApplicationsBtn").classList.toggle("active", tabId === "applicationsTab");
+            document.getElementById("tabScholarshipsBtn").classList.toggle("active", tabId === "scholarshipsTab");
+            if (tabId === "scholarshipsTab") {
+                loadScholarships();
+            }
+        }
+
+        async function loadDashboardData() {
+            try {
+                const statsRes = await fetch("/api/admin/stats");
+                const statsData = await statsRes.json();
+                if (statsData.stats) {
+                    const s = statsData.stats;
+                    document.getElementById("statTotal").textContent = s.total || 0;
+                    document.getElementById("statOfficer").textContent = s.pending_officer || 0;
+                    document.getElementById("statHod").textContent = s.pending_hod || 0;
+                    document.getElementById("statPrincipal").textContent = s.pending_principal || 0;
+                    document.getElementById("statApproved").textContent = s.approved || 0;
+                    document.getElementById("statPaid").textContent = s.paid || 0;
+                }
+
+                const res = await fetch("/api/admin/applications");
+                const data = await res.json();
+                allApplications = data.applications || [];
+                renderApplicationsTable();
+            } catch (err) {
+                showNotice("Error loading application data.", "error");
+            }
+        }
+
+        function renderApplicationsTable() {
+            const query = searchInput.value.toLowerCase().trim();
+            const filter = statusFilter.value;
+
+            const filtered = allApplications.filter(app => {
+                const matchesFilter = (filter === "ALL") || (app.status === filter);
+                const matchesSearch = !query ||
+                    (app.tracking_id && app.tracking_id.toLowerCase().includes(query)) ||
+                    (app.full_name && app.full_name.toLowerCase().includes(query)) ||
+                    (app.scholarship_name && app.scholarship_name.toLowerCase().includes(query)) ||
+                    (app.college && app.college.toLowerCase().includes(query));
+
+                return matchesFilter && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                applicationsTableBody.innerHTML = `
+                    <tr><td colspan="9" style="text-align: center; padding: 40px; color: #64748b;">No applications matching criteria found.</td></tr>
+                `;
+                return;
+            }
+
+            applicationsTableBody.innerHTML = "";
+            filtered.forEach(app => {
+                const tr = document.createElement("tr");
+
+                let badgeClass = "badge-submitted";
+                if (app.status === "Pending at HOD") badgeClass = "badge-pending-at-hod";
+                else if (app.status === "Pending at Principal") badgeClass = "badge-pending-at-principal";
+                else if (app.status === "Approved") badgeClass = "badge-approved";
+                else if (app.status === "Rejected") badgeClass = "badge-rejected";
+                else if (app.status === "Payment Pending") badgeClass = "badge-payment-pending";
+                else if (app.status === "Paid") badgeClass = "badge-paid";
+
+                let docLinks = "";
+                if (app.aadhar_doc) docLinks += `<a href="/uploads/${app.aadhar_doc}" target="_blank" class="doc-chip">📄 Aadhar</a>`;
+                if (app.income_doc) docLinks += `<a href="/uploads/${app.income_doc}" target="_blank" class="doc-chip">💰 Income</a>`;
+                if (app.marks_doc) docLinks += `<a href="/uploads/${app.marks_doc}" target="_blank" class="doc-chip">📈 Marks</a>`;
+                if (app.bonafide_doc) docLinks += `<a href="/uploads/${app.bonafide_doc}" target="_blank" class="doc-chip">🏛️ Bonafide</a>`;
+                if (!docLinks) docLinks = `<span style="color: #94a3b8; font-size: 11px;">None</span>`;
+
+                // Disbursement Action button if Approved or Payment Pending
+                let actionBtn = "";
+                if (app.status === "Approved" || app.status === "Payment Pending") {
+                    actionBtn = `<button class="action-btn btn-disburse" onclick="openDisburseModal(${app.id})">💰 Disburse Fund</button>`;
+                }
+
+                tr.innerHTML = `
+                    <td style="font-weight: bold; color: #64748b;">#${app.id}</td>
+                    <td><span style="font-family: monospace; font-weight: bold; color: #2563eb; background: #eff6ff; padding: 2px 6px; border-radius: 4px;">${escapeHtml(app.tracking_id)}</span></td>
+                    <td>
+                        <div style="font-weight: 600; color: #0f172a;">${escapeHtml(app.full_name)}</div>
+                        <div style="font-size: 12px; color: #64748b;">${escapeHtml(app.email)}</div>
+                        <div style="font-size: 11px; color: #475569;">${escapeHtml(app.college || "")} (${escapeHtml(app.course || "")})</div>
+                    </td>
+                    <td>
+                        <div style="font-weight: 600;">${escapeHtml(app.scholarship_name)}</div>
+                        <div style="font-size: 11px; color: #64748b;">${escapeHtml(app.scholarship_id || "")}</div>
+                    </td>
+                    <td><strong>${app.academic_percentage}%</strong></td>
+                    <td>₹${Number(app.annual_income).toLocaleString("en-IN")}</td>
+                    <td>${docLinks}</td>
+                    <td><span class="badge ${badgeClass}">${escapeHtml(app.status)}</span></td>
+                    <td>
+                        <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                            ${actionBtn}
+                            <button class="action-btn" style="background: #f1f5f9; color: #334155;" onclick="viewHistory(${app.id}, '${escapeHtml(app.tracking_id)}')">History</button>
+                        </div>
+                    </td>
+                `;
+
+                applicationsTableBody.appendChild(tr);
+            });
+        }
+
+        // Disbursement Handling
+        function openDisburseModal(id) {
+            activeDisburseApp = allApplications.find(a => a.id === id);
+            if (!activeDisburseApp) return;
+
+            document.getElementById("disburseStudentName").textContent = activeDisburseApp.full_name;
+            document.getElementById("disburseTrackingId").textContent = activeDisburseApp.tracking_id;
+            document.getElementById("disburseSchName").textContent = activeDisburseApp.scholarship_name;
+            document.getElementById("disburseStatus").textContent = activeDisburseApp.status;
+            document.getElementById("paymentRefInput").value = `DBT-TXN-${Date.now()}`;
+            document.getElementById("disburseRemarksInput").value = "Scholarship disbursement processed and confirmed by Finance Cell.";
+
+            document.getElementById("disburseModal").style.display = "flex";
+        }
+
+        async function submitDisbursement() {
+            if (!activeDisburseApp) return;
+            const targetStatus = document.getElementById("disburseTargetStatus").value;
+            const ref = document.getElementById("paymentRefInput").value.trim();
+            const remarks = document.getElementById("disburseRemarksInput").value.trim();
+
+            const btn = document.getElementById("confirmDisburseBtn");
+            btn.disabled = true;
+            btn.textContent = "Processing...";
+
+            try {
+                const res = await fetch(`/api/admin/applications/${activeDisburseApp.id}/disburse`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        new_status: targetStatus,
+                        payment_reference: ref,
+                        remarks: remarks
+                    })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    closeModal("disburseModal");
+                    showNotice(`Disbursement status for #${activeDisburseApp.id} updated to ${targetStatus}!`, "success");
+                    loadDashboardData();
+                } else {
+                    showNotice(data.message || "Failed to update disbursement.", "error");
+                }
+            } catch (err) {
+                showNotice("Error processing disbursement.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Confirm Disbursement 💰";
+            }
+        }
+
+        // SCHOLARSHIP SCHEMES MANAGEMENT (CRUD)
+        async function loadScholarships() {
+            const tbody = document.getElementById("scholarshipsTableBody");
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 20px;">Fetching schemes from MySQL...</td></tr>`;
+
+            try {
+                const res = await fetch("/api/admin/scholarships");
+                const data = await res.json();
+                allScholarships = data.scholarships || [];
+
+                if (allScholarships.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 20px;">No scholarships found. Click 'Add New Scholarship' above.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = "";
+                allScholarships.forEach(s => {
+                    const tr = document.createElement("tr");
+                    const statusBadge = s.status === "Active"
+                        ? `<span class="badge" style="background: #dcfce7; color: #15803d;">Active</span>`
+                        : `<span class="badge" style="background: #fee2e2; color: #b91c1c;">Inactive</span>`;
+
+                    tr.innerHTML = `
+                        <td><strong style="color: #2563eb;">${escapeHtml(s.id)}</strong></td>
+                        <td>
+                            <div style="font-weight: 600;">${escapeHtml(s.name)}</div>
+                            <div style="font-size: 12px; color: #64748b;">${escapeHtml(s.description || "")}</div>
+                        </td>
+                        <td><span style="background: #f1f5f9; padding: 2px 8px; border-radius: 4px; font-size: 12px;">${escapeHtml(s.category)}</span></td>
+                        <td><strong style="color: #16a34a;">₹${Number(s.amount).toLocaleString("en-IN")}</strong></td>
+                        <td style="font-size: 12px; color: #334155;">${escapeHtml(s.eligibility)}</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <button class="action-btn" style="background: #3b82f6; color: #fff;" onclick="openEditScholarshipModal('${escapeHtml(s.id)}')">Edit</button>
+                            <button class="action-btn" style="background: #ef4444; color: #fff;" onclick="deleteScholarship('${escapeHtml(s.id)}')">Delete</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="7" style="color: #dc2626; text-align: center;">Error loading scholarships.</td></tr>`;
+            }
+        }
+
+        function openAddScholarshipModal() {
+            isEditingSch = false;
+            document.getElementById("schModalTitle").textContent = "Add New Scholarship Scheme";
+            document.getElementById("schId").value = "";
+            document.getElementById("schId").disabled = false;
+            document.getElementById("schName").value = "";
+            document.getElementById("schCategory").value = "Merit Based";
+            document.getElementById("schAmount").value = "";
+            document.getElementById("schEligibility").value = "";
+            document.getElementById("schDescription").value = "";
+            document.getElementById("schStatus").value = "Active";
+
+            document.getElementById("scholarshipModal").style.display = "flex";
+        }
+
+        function openEditScholarshipModal(id) {
+            const sch = allScholarships.find(s => s.id === id);
+            if (!sch) return;
+
+            isEditingSch = true;
+            document.getElementById("schModalTitle").textContent = `Edit Scheme (${id})`;
+            document.getElementById("schId").value = sch.id;
+            document.getElementById("schId").disabled = true;
+            document.getElementById("schName").value = sch.name;
+            document.getElementById("schCategory").value = sch.category;
+            document.getElementById("schAmount").value = sch.amount;
+            document.getElementById("schEligibility").value = sch.eligibility;
+            document.getElementById("schDescription").value = sch.description || "";
+            document.getElementById("schStatus").value = sch.status;
+
+            document.getElementById("scholarshipModal").style.display = "flex";
+        }
+
+        document.getElementById("scholarshipForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const id = document.getElementById("schId").value.trim().toUpperCase();
+            const name = document.getElementById("schName").value.trim();
+            const category = document.getElementById("schCategory").value;
+            const amount = document.getElementById("schAmount").value;
+            const eligibility = document.getElementById("schEligibility").value.trim();
+            const description = document.getElementById("schDescription").value.trim();
+            const status = document.getElementById("schStatus").value;
+
+            const url = isEditingSch ? `/api/admin/scholarships/${id}` : "/api/admin/scholarships";
+            const method = isEditingSch ? "PUT" : "POST";
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id, name, category, amount, eligibility, description, status })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    closeModal("scholarshipModal");
+                    showNotice(data.message || "Scholarship scheme saved successfully!", "success");
+                    loadScholarships();
+                } else {
+                    alert(data.message || "Failed to save scholarship.");
+                }
+            } catch (err) {
+                alert("Error connecting to scholarship API.");
+            }
+        });
+
+        async function deleteScholarship(id) {
+            if (!confirm(`Are you sure you want to remove scholarship scheme ${id}?`)) return;
+
+            try {
+                const res = await fetch(`/api/admin/scholarships/${id}`, { method: "DELETE" });
+                const data = await res.json();
+                if (res.ok) {
+                    showNotice(data.message || "Scheme deleted.", "success");
+                    loadScholarships();
+                } else {
+                    alert(data.message || "Failed to delete.");
+                }
+            } catch (e) {
+                alert("Error deleting scheme.");
+            }
+        }
+
+        async function viewHistory(appId, trackingId) {
+            document.getElementById("historyTrackingBadge").textContent = `Tracking ID: ${trackingId}`;
+            const timeline = document.getElementById("historyTimeline");
+            timeline.innerHTML = "<p>Loading history records...</p>";
+            document.getElementById("historyModal").style.display = "flex";
+
+            try {
+                const res = await fetch(`/api/applications/${appId}/history`);
+                const data = await res.json();
+                const history = data.history || [];
+
+                if (history.length === 0) {
+                    timeline.innerHTML = "<p style='color: #64748b;'>No audit history logs recorded yet.</p>";
+                    return;
+                }
+
+                timeline.innerHTML = "";
+                history.forEach(h => {
+                    const eventDiv = document.createElement("div");
+                    eventDiv.className = "timeline-event";
+                    const isReject = h.action.toLowerCase().includes("reject");
+                    const isApproved = h.action.toLowerCase().includes("approv") || h.action.toLowerCase().includes("paid");
+
+                    let dotClass = "timeline-dot";
+                    if (isReject) dotClass += " rejected";
+                    else if (isApproved) dotClass += " completed";
+
+                    const timeStr = new Date(h.timestamp).toLocaleString("en-IN", {
+                        day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
+                    });
+
+                    eventDiv.innerHTML = `
+                        <div class="${dotClass}"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-time">${timeStr}</span>
+                            <div style="font-weight: 700; color: #0f172a; margin-bottom: 2px;">
+                                [${escapeHtml(h.stage)}] ${escapeHtml(h.action)}
+                            </div>
+                            <div style="font-size: 12px; color: #475569; margin-bottom: 6px;">
+                                By: <strong>${escapeHtml(h.actor_name)}</strong> (${escapeHtml(h.actor_role)})
+                            </div>
+                            <div style="font-size: 13px; color: #334155; background: #ffffff; padding: 8px 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                                "${escapeHtml(h.remarks || "No remarks.")}"
+                            </div>
+                        </div>
+                    `;
+                    timeline.appendChild(eventDiv);
+                });
+            } catch (err) {
+                timeline.innerHTML = "<p style='color: #dc2626;'>Failed to load history.</p>";
+            }
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = "none";
+        }
+
+        function showNotice(msg, type) {
+            adminNotice.style.display = "block";
+            adminNotice.textContent = msg;
+            if (type === "success") {
+                adminNotice.style.background = "#dcfce7";
+                adminNotice.style.color = "#166534";
+                adminNotice.style.border = "1px solid #86efac";
+            } else {
+                adminNotice.style.background = "#fee2e2";
+                adminNotice.style.color = "#991b1b";
+                adminNotice.style.border = "1px solid #fca5a5";
+            }
+            setTimeout(() => { adminNotice.style.display = "none"; }, 5000);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return "";
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        checkAdminAuth();
+    </script>
+</body>
+</html>

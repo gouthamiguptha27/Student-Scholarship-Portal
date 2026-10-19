@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Scholarships - Scholarship Portal</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/register.css">
+</head>
+
+<body>
+
+<header>
+    <nav class="navbar">
+        <h2>🎓 Scholarship Portal</h2>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="scholarships.html" class="active">Scholarships</a>
+            <a href="dashboard.html" id="navDashboard">Dashboard</a>
+            <a href="status.html">Track Status</a>
+            <a href="login.html" id="navAuth">Login</a>
+            <a href="admin.html" style="color: #f59e0b; font-weight: bold;">Admin</a>
+        </div>
+    </nav>
+</header>
+
+<section class="features">
+    <h2>Available Scholarships</h2>
+    <p style="text-align: center; color: #4b5563; margin-top: -10px; margin-bottom: 30px;">
+        Explore current financial aid opportunities and click <strong>Apply Now</strong> to submit your application.
+    </p>
+
+    <div class="feature-container" id="scholarshipsContainer">
+        <div style="text-align: center; padding: 40px; color: #64748b; width: 100%;">
+            Loading scholarship schemes from MySQL catalog...
+        </div>
+    </div>
+
+</section>
+
+<footer>
+    <p>© 2026 Student Scholarship Management Portal</p>
+</footer>
+
+<script>
+    // Update navigation if student is logged in
+    const studentData = localStorage.getItem("student");
+    if (studentData) {
+        try {
+            const student = JSON.parse(studentData);
+            const navAuth = document.getElementById("navAuth");
+            if (navAuth) {
+                navAuth.textContent = `Logout (${student.name.split(" ")[0]})`;
+                navAuth.href = "#";
+                navAuth.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem("student");
+                    localStorage.removeItem("studentToken");
+                    alert("Logged out successfully.");
+                    window.location.reload();
+                });
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    // Load schemes dynamically from MySQL database
+    async function loadCatalog() {
+        const container = document.getElementById("scholarshipsContainer");
+        try {
+            const res = await fetch("/api/scholarships");
+            const data = await res.json();
+            const schemes = data.scholarships || [];
+
+            if (schemes.length === 0) {
+                container.innerHTML = `<div style="text-align: center; padding: 40px; color: #64748b; width: 100%;">No active scholarship schemes available at this time.</div>`;
+                return;
+            }
+
+            container.innerHTML = "";
+            schemes.forEach((s, idx) => {
+                const card = document.createElement("div");
+                card.className = "feature-card";
+
+                const icons = ["🏆", "🎓", "📚", "🌟", "🔬"];
+                const icon = icons[idx % icons.length];
+
+                card.innerHTML = `
+                    <div style="font-size: 2.2rem; margin-bottom: 10px;">${icon}</div>
+                    <h3>${escapeHtml(s.name)}</h3>
+                    <span style="display:inline-block; background: #e0f2fe; color: #0284c7; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; margin-bottom: 10px;">ID: ${escapeHtml(s.id)}</span>
+                    <p style="font-size: 13.5px; color: #4b5563; min-height: 40px;">
+                        ${escapeHtml(s.description || "Institutional scholarship scheme for eligible candidates.")}
+                    </p>
+                    <br>
+                    <p style="font-weight: 700; font-size: 1.15rem; color: #16a34a; margin: 5px 0;">
+                        Amount: ₹${Number(s.amount).toLocaleString("en-IN")} / year
+                    </p>
+                    <p style="color: #4b5563; font-size: 0.95rem; margin-bottom: 15px;">
+                        Eligibility: <strong>${escapeHtml(s.eligibility)}</strong>
+                    </p>
+                    <a href="apply.html?scholarship_id=${encodeURIComponent(s.id)}&scholarship_name=${encodeURIComponent(s.name)}" class="btn" style="width: 100%; box-sizing: border-box; text-align: center;">
+                        Apply Now &rarr;
+                    </a>
+                `;
+                container.appendChild(card);
+            });
+        } catch (err) {
+            container.innerHTML = `<div style="text-align: center; padding: 40px; color: #dc2626; width: 100%;">Error loading scholarships.</div>`;
+        }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return "";
+        return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    loadCatalog();
+</script>
+
+</body>
+</html>

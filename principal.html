@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Principal Portal - Level 3 Final Institution Approval</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/register.css">
+    <style>
+        .dashboard-container {
+            max-width: 1250px;
+            margin: 30px auto;
+            padding: 0 20px 40px 20px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: #ffffff;
+            padding: 22px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            text-align: center;
+        }
+        .stat-card h4 {
+            margin: 0;
+            font-size: 13px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stat-card .num {
+            font-size: 34px;
+            font-weight: 800;
+            margin: 10px 0;
+        }
+        .filter-bar {
+            background: #ffffff;
+            padding: 16px 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .filter-bar input {
+            flex: 1;
+            min-width: 250px;
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .table-responsive {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            overflow-x: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            text-align: left;
+        }
+        th {
+            background: #f8fafc;
+            color: #334155;
+            font-weight: 600;
+            padding: 14px 16px;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            vertical-align: middle;
+        }
+        tr:hover {
+            background: #f8fafc;
+        }
+        .btn-action {
+            padding: 7px 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-final-approve {
+            background: #16a34a;
+            color: #ffffff;
+        }
+        .btn-final-approve:hover {
+            background: #15803d;
+        }
+        .btn-reject-action {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fca5a5;
+        }
+        .btn-reject-action:hover {
+            background: #fecaca;
+        }
+        .btn-history {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+        }
+        .doc-chip {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #eff6ff;
+            color: #2563eb;
+            border-radius: 4px;
+            font-size: 12px;
+            text-decoration: none;
+            margin: 2px;
+            border: 1px solid #bfdbfe;
+        }
+        .doc-chip:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <h2>🏛️ Principal Portal <span style="font-size: 12px; background: #dcfce7; color: #15803d; padding: 3px 8px; border-radius: 12px; vertical-align: middle;">Level 3 Final Approver</span></h2>
+            <div class="nav-links">
+                <a href="officer.html">Officer Portal</a>
+                <a href="hod.html">HOD Portal</a>
+                <a href="principal.html" class="active">Principal Dashboard</a>
+                <a href="admin.html">Admin</a>
+                <button id="logoutBtn" style="background: transparent; border: 1px solid #cbd5e1; color: #334155; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">Logout</button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="dashboard-container">
+        
+        <!-- Welcome Bar -->
+        <div style="background: linear-gradient(135deg, #4c1d95, #6d28d9); color: #ffffff; padding: 22px 28px; border-radius: 12px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h2 style="margin: 0; font-size: 22px;">Welcome, <span id="principalName">Prof. K. Rao (Principal)</span> 🎓</h2>
+                <p style="margin: 4px 0 0 0; opacity: 0.9; font-size: 14px;">Level 3 Final Authority: Sanction or reject scholarship applications recommended by Department HODs.</p>
+            </div>
+            <div>
+                <button class="btn" id="refreshBtn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); padding: 9px 18px; font-size: 13px;">🔄 Refresh Records</button>
+            </div>
+        </div>
+
+        <!-- Metric Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h4>Pending at Principal</h4>
+                <div class="num" id="statPending" style="color: #6d28d9;">0</div>
+                <p style="font-size: 12px; color: #64748b; margin: 0;">Awaiting Final Sanction</p>
+            </div>
+            <div class="stat-card">
+                <h4>Final Approved / Sanctioned</h4>
+                <div class="num" id="statApproved" style="color: #16a34a;">0</div>
+                <p style="font-size: 12px; color: #64748b; margin: 0;">Awarded Scholarships</p>
+            </div>
+            <div class="stat-card">
+                <h4>Rejected at Level 3</h4>
+                <div class="num" id="statRejected" style="color: #dc2626;">0</div>
+                <p style="font-size: 12px; color: #64748b; margin: 0;">Sanction Denied</p>
+            </div>
+        </div>
+
+        <div id="alertBox" style="display: none; padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; font-weight: 500;"></div>
+
+        <!-- Filter and Search -->
+        <div class="filter-bar">
+            <input type="text" id="searchInput" placeholder="Search by student name, tracking ID, college, scheme...">
+            <div style="font-size: 13px; color: #64748b;">
+                Showing HOD-recommended applications: <strong>Pending at Principal</strong>
+            </div>
+        </div>
+
+        <!-- Applications Table -->
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tracking ID</th>
+                        <th>Student Profile</th>
+                        <th>Scholarship Scheme</th>
+                        <th>Academic %</th>
+                        <th>HOD Recommendation</th>
+                        <th>Documents</th>
+                        <th>Current Status</th>
+                        <th>Principal Final Decision</th>
+                    </tr>
+                </thead>
+                <tbody id="principalTableBody">
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 40px; color: #64748b;">
+                            Loading HOD-recommended applications...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- FINAL APPROVAL MODAL -->
+    <div class="modal-overlay" id="approveModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 style="color: #15803d;">Level 3: Grant Final Institutional Approval</h3>
+                <button class="modal-close-btn" onclick="closeModal('approveModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="color: #475569; font-size: 14px; margin-bottom: 15px;">
+                    Granting institutional scholarship sanction to <strong id="appStudentName" style="color: #0f172a;"></strong> (<span id="appTrackingId"></span>).
+                </p>
+                
+                <!-- Review summary of prior levels -->
+                <div style="background: #f8fafc; padding: 14px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #e2e8f0; font-size: 13px; line-height: 1.6;">
+                    <div><strong>Scheme:</strong> <span id="appSchName"></span></div>
+                    <div><strong>Academic Standing:</strong> <span id="appPercentage" style="font-weight: bold; color: #059669;"></span>%</div>
+                    <div><strong>Level 1 (Officer Note):</strong> <span id="appOfficerRemarks" style="color: #2563eb;"></span></div>
+                    <div><strong>Level 2 (HOD Recommendation):</strong> <span id="appHodRemarks" style="color: #b45309; font-weight: 600;"></span></div>
+                </div>
+
+                <label style="font-weight: 600; font-size: 14px; display: block; margin-bottom: 6px;">Principal Approval & Sanction Remarks *</label>
+                <textarea id="principalRemarksInput" rows="3" style="width: 100%; padding: 10px; border: 1px solid #86efac; border-radius: 6px; font-family: inherit; font-size: 14px;" placeholder="e.g. Approved under College Institutional Merit Fund. Sanction order issued for scholarship disbursement."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" style="background: #f1f5f9; color: #475569;" onclick="closeModal('approveModal')">Cancel</button>
+                <button class="btn btn-final-approve" id="confirmApproveBtn" onclick="submitApprove()">Grant Final Approval ✅</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- REJECT MODAL -->
+    <div class="modal-overlay" id="rejectModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 style="color: #b91c1c;">Level 3: Principal Rejection</h3>
+                <button class="modal-close-btn" onclick="closeModal('rejectModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="color: #475569; font-size: 14px; margin-bottom: 15px;">
+                    Reject application for <strong id="rejStudentName"></strong> (<span id="rejTrackingId"></span>).
+                </p>
+                <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 13px; color: #991b1b;">
+                    ⚠️ Final decision will terminate this application. The student will be notified of this reason.
+                </div>
+
+                <label style="font-weight: 600; font-size: 14px; display: block; margin-bottom: 6px;">Principal Rejection Reason *</label>
+                <textarea id="rejectionReasonInput" rows="3" style="width: 100%; padding: 10px; border: 1px solid #fca5a5; border-radius: 6px; font-family: inherit; font-size: 14px;" placeholder="e.g. Scheme quota exhausted for current academic cycle. Candidate ranked below sanctioned cutoff."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" style="background: #f1f5f9; color: #475569;" onclick="closeModal('rejectModal')">Cancel</button>
+                <button class="btn" style="background: #dc2626; color: #ffffff;" id="confirmRejectBtn" onclick="submitReject()">Confirm Final Rejection</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUDIT HISTORY MODAL -->
+    <div class="modal-overlay" id="historyModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>📋 Complete 4-Level Approval History</h3>
+                <button class="modal-close-btn" onclick="closeModal('historyModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="historyTrackingBadge" style="font-family: monospace; font-size: 14px; font-weight: bold; color: #2563eb; margin-bottom: 15px;"></div>
+                <div class="audit-timeline" id="historyTimeline"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" style="background: #f1f5f9; color: #475569;" onclick="closeModal('historyModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Student Scholarship Management Portal - Principal Executive Suite</p>
+    </footer>
+
+    <script>
+        let principalApps = [];
+        let activeApp = null;
+        let currentUser = null;
+
+        const staffRaw = localStorage.getItem("staffUser");
+        if (staffRaw) {
+            try {
+                currentUser = JSON.parse(staffRaw);
+                document.getElementById("principalName").textContent = currentUser.name || "Prof. K. Rao (Principal)";
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            localStorage.removeItem("staffUser");
+            localStorage.removeItem("staffToken");
+            window.location.href = "login.html";
+        });
+
+        document.getElementById("refreshBtn").addEventListener("click", () => {
+            loadPrincipalData();
+            showAlert("Refreshed Principal review records.", "success");
+        });
+
+        document.getElementById("searchInput").addEventListener("input", renderTable);
+
+        async function loadPrincipalData() {
+            try {
+                const statsRes = await fetch("/api/principal/stats");
+                const statsData = await statsRes.json();
+                if (statsData.stats) {
+                    document.getElementById("statPending").textContent = statsData.stats.pending_principal || 0;
+                    document.getElementById("statApproved").textContent = statsData.stats.approved_principal || 0;
+                    document.getElementById("statRejected").textContent = statsData.stats.rejected_principal || 0;
+                }
+
+                const res = await fetch("/api/principal/applications");
+                const data = await res.json();
+                principalApps = data.applications || [];
+                renderTable();
+            } catch (err) {
+                console.error(err);
+                showAlert("Error loading Principal applications from backend.", "error");
+            }
+        }
+
+        function renderTable() {
+            const query = document.getElementById("searchInput").value.toLowerCase().trim();
+            const filtered = principalApps.filter(app => {
+                return !query ||
+                    (app.tracking_id && app.tracking_id.toLowerCase().includes(query)) ||
+                    (app.full_name && app.full_name.toLowerCase().includes(query)) ||
+                    (app.college && app.college.toLowerCase().includes(query)) ||
+                    (app.course && app.course.toLowerCase().includes(query)) ||
+                    (app.scholarship_name && app.scholarship_name.toLowerCase().includes(query));
+            });
+
+            const tbody = document.getElementById("principalTableBody");
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr><td colspan="9" style="text-align: center; padding: 40px; color: #64748b;">
+                        🎉 No pending applications awaiting Principal approval right now!
+                    </td></tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = "";
+            filtered.forEach(app => {
+                const tr = document.createElement("tr");
+
+                let docLinks = "";
+                if (app.aadhar_doc) docLinks += `<a href="/uploads/${app.aadhar_doc}" target="_blank" class="doc-chip">📄 Aadhar</a>`;
+                if (app.income_doc) docLinks += `<a href="/uploads/${app.income_doc}" target="_blank" class="doc-chip">💰 Income</a>`;
+                if (app.marks_doc) docLinks += `<a href="/uploads/${app.marks_doc}" target="_blank" class="doc-chip">📈 Marks</a>`;
+                if (app.bonafide_doc) docLinks += `<a href="/uploads/${app.bonafide_doc}" target="_blank" class="doc-chip">🏛️ Bonafide</a>`;
+                if (!docLinks) docLinks = `<span style="color: #94a3b8; font-size: 12px;">No files</span>`;
+
+                tr.innerHTML = `
+                    <td style="font-weight: bold; color: #64748b;">#${app.id}</td>
+                    <td><span style="font-family: monospace; font-weight: bold; color: #2563eb; background: #eff6ff; padding: 3px 6px; border-radius: 4px;">${escapeHtml(app.tracking_id)}</span></td>
+                    <td>
+                        <div style="font-weight: 700; color: #0f172a;">${escapeHtml(app.full_name)}</div>
+                        <div style="font-size: 12px; color: #64748b;">${escapeHtml(app.email)} | ${escapeHtml(app.phone || "")}</div>
+                        <div style="font-size: 12px; color: #475569;">${escapeHtml(app.college || "")} (${escapeHtml(app.course || "")})</div>
+                    </td>
+                    <td>
+                        <div style="font-weight: 600;">${escapeHtml(app.scholarship_name)}</div>
+                        <div style="font-size: 12px; color: #64748b;">${escapeHtml(app.scholarship_id || "")}</div>
+                    </td>
+                    <td><span style="font-weight: 700; color: #059669; font-size: 15px;">${app.academic_percentage}%</span></td>
+                    <td style="max-width: 220px; font-size: 12px; color: #334155; line-height: 1.4;">
+                        ${escapeHtml(app.hod_remarks || "Recommended by HOD")}
+                    </td>
+                    <td>${docLinks}</td>
+                    <td><span class="badge badge-pending-at-principal">${escapeHtml(app.status)}</span></td>
+                    <td>
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                            <button class="btn-action btn-final-approve" onclick="openApproveModal(${app.id})">Approve ✅</button>
+                            <button class="btn-action btn-reject-action" onclick="openRejectModal(${app.id})">Reject</button>
+                            <button class="btn-action btn-history" onclick="viewHistory(${app.id}, '${escapeHtml(app.tracking_id)}')">History</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openApproveModal(id) {
+            activeApp = principalApps.find(a => a.id === id);
+            if (!activeApp) return;
+
+            document.getElementById("appStudentName").textContent = activeApp.full_name;
+            document.getElementById("appTrackingId").textContent = activeApp.tracking_id;
+            document.getElementById("appSchName").textContent = activeApp.scholarship_name;
+            document.getElementById("appPercentage").textContent = activeApp.academic_percentage;
+            document.getElementById("appOfficerRemarks").textContent = activeApp.officer_remarks || "Verified eligibility & certificates.";
+            document.getElementById("appHodRemarks").textContent = activeApp.hod_remarks || "Recommended for institutional approval.";
+            document.getElementById("principalRemarksInput").value = "Final institution approval granted based on academic excellence and HOD recommendation. Sanctioned for disbursement.";
+
+            document.getElementById("approveModal").style.display = "flex";
+        }
+
+        async function submitApprove() {
+            if (!activeApp) return;
+            const remarks = document.getElementById("principalRemarksInput").value.trim();
+            const btn = document.getElementById("confirmApproveBtn");
+            btn.disabled = true;
+            btn.textContent = "Sanctioning approval...";
+
+            try {
+                const res = await fetch(`/api/principal/applications/${activeApp.id}/approve`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        principal_name: currentUser ? currentUser.name : "Prof. K. Rao (Principal)",
+                        remarks: remarks
+                    })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    closeModal("approveModal");
+                    showAlert(`Application #${activeApp.id} granted Final Institutional Approval!`, "success");
+                    loadPrincipalData();
+                } else {
+                    showAlert(data.message || "Failed to grant approval.", "error");
+                }
+            } catch (err) {
+                console.error(err);
+                showAlert("Network error during approval action.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Grant Final Approval ✅";
+            }
+        }
+
+        function openRejectModal(id) {
+            activeApp = principalApps.find(a => a.id === id);
+            if (!activeApp) return;
+
+            document.getElementById("rejStudentName").textContent = activeApp.full_name;
+            document.getElementById("rejTrackingId").textContent = activeApp.tracking_id;
+            document.getElementById("rejectionReasonInput").value = "";
+
+            document.getElementById("rejectModal").style.display = "flex";
+        }
+
+        async function submitReject() {
+            if (!activeApp) return;
+            const reason = document.getElementById("rejectionReasonInput").value.trim();
+            if (!reason) {
+                alert("Please specify a rejection reason.");
+                return;
+            }
+
+            const btn = document.getElementById("confirmRejectBtn");
+            btn.disabled = true;
+            btn.textContent = "Processing rejection...";
+
+            try {
+                const res = await fetch(`/api/principal/applications/${activeApp.id}/reject`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        principal_name: currentUser ? currentUser.name : "Prof. K. Rao (Principal)",
+                        reason: reason
+                    })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    closeModal("rejectModal");
+                    showAlert(`Application #${activeApp.id} rejected at Principal level.`, "success");
+                    loadPrincipalData();
+                } else {
+                    showAlert(data.message || "Failed to reject application.", "error");
+                }
+            } catch (err) {
+                console.error(err);
+                showAlert("Network error during rejection.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Confirm Final Rejection";
+            }
+        }
+
+        async function viewHistory(appId, trackingId) {
+            document.getElementById("historyTrackingBadge").textContent = `Tracking ID: ${trackingId}`;
+            const timeline = document.getElementById("historyTimeline");
+            timeline.innerHTML = "<p>Loading history records...</p>";
+            document.getElementById("historyModal").style.display = "flex";
+
+            try {
+                const res = await fetch(`/api/applications/${appId}/history`);
+                const data = await res.json();
+                const history = data.history || [];
+
+                if (history.length === 0) {
+                    timeline.innerHTML = "<p style='color: #64748b;'>No audit history logs recorded yet.</p>";
+                    return;
+                }
+
+                timeline.innerHTML = "";
+                history.forEach(h => {
+                    const eventDiv = document.createElement("div");
+                    eventDiv.className = "timeline-event";
+                    const isReject = h.action.toLowerCase().includes("reject");
+                    const isApproved = h.action.toLowerCase().includes("approv") || h.action.toLowerCase().includes("paid");
+
+                    let dotClass = "timeline-dot";
+                    if (isReject) dotClass += " rejected";
+                    else if (isApproved) dotClass += " completed";
+
+                    const timeStr = new Date(h.timestamp).toLocaleString("en-IN", {
+                        day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
+                    });
+
+                    eventDiv.innerHTML = `
+                        <div class="${dotClass}"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-time">${timeStr}</span>
+                            <div style="font-weight: 700; color: #0f172a; margin-bottom: 2px;">
+                                [${escapeHtml(h.stage)}] ${escapeHtml(h.action)}
+                            </div>
+                            <div style="font-size: 12px; color: #475569; margin-bottom: 6px;">
+                                By: <strong>${escapeHtml(h.actor_name)}</strong> (${escapeHtml(h.actor_role)})
+                            </div>
+                            <div style="font-size: 13px; color: #334155; background: #ffffff; padding: 8px 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                                "${escapeHtml(h.remarks || "No remarks.")}"
+                            </div>
+                        </div>
+                    `;
+                    timeline.appendChild(eventDiv);
+                });
+            } catch (err) {
+                timeline.innerHTML = "<p style='color: #dc2626;'>Failed to load history.</p>";
+            }
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = "none";
+        }
+
+        function showAlert(msg, type) {
+            const box = document.getElementById("alertBox");
+            box.style.display = "block";
+            box.textContent = msg;
+            if (type === "success") {
+                box.style.background = "#dcfce7";
+                box.style.color = "#166534";
+                box.style.border = "1px solid #86efac";
+            } else {
+                box.style.background = "#fee2e2";
+                box.style.color = "#991b1b";
+                box.style.border = "1px solid #fca5a5";
+            }
+            setTimeout(() => { box.style.display = "none"; }, 5000);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return "";
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        loadPrincipalData();
+    </script>
+</body>
+</html>

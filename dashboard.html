@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Scholarship Portal</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/register.css">
+    <style>
+        .app-status-card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            text-align: left;
+        }
+        .rejection-banner {
+            background: #fef2f2;
+            border-left: 5px solid #dc2626;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 15px;
+            color: #991b1b;
+        }
+        .approval-success-banner {
+            background: #f0fdf4;
+            border-left: 5px solid #16a34a;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 15px;
+            color: #166534;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <nav class="navbar">
+            <h2>🎓 Scholarship Portal</h2>
+            <div class="nav-links">
+                <a href="dashboard.html" class="active">Dashboard</a>
+                <a href="scholarships.html">Scholarships</a>
+                <a href="apply.html">Apply Now</a>
+                <a href="status.html">Track Applications</a>
+                <a href="#" id="btnProfileModal" onclick="openProfileModal()">👤 My Profile</a>
+                <a href="#" id="btnLogout">Logout</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="features" style="background: transparent; max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+        
+        <!-- Welcome & Profile Bar -->
+        <div style="background: linear-gradient(135deg, #1e3a8a, #2563eb); color: #ffffff; padding: 25px 30px; border-radius: 12px; margin-bottom: 30px; text-align: left; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h1 style="margin: 0; font-size: 24px;" id="welcomeHeader">Welcome to Student Portal 👋</h1>
+                <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 14px;">Monitor your four-level scholarship approval progress in real-time.</p>
+                <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 12px; font-size: 13px; opacity: 0.95;">
+                    <div><strong>Student ID:</strong> <span id="dashStudentId">#--</span></div>
+                    <div><strong>Email:</strong> <span id="dashEmail">--</span></div>
+                    <div><strong>College:</strong> <span id="dashCollege">--</span></div>
+                    <div><strong>Course:</strong> <span id="dashCourse">--</span></div>
+                </div>
+            </div>
+            <div>
+                <button class="btn" style="background: #ffffff; color: #1e3a8a; padding: 10px 18px; font-size: 13px; font-weight: bold;" onclick="openProfileModal()">✏️ Edit Profile</button>
+            </div>
+        </div>
+
+        <div id="dashNotice" style="display: none; padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; text-align: left; font-weight: 500;"></div>
+
+        <!-- Metric Cards -->
+        <div class="feature-container" style="margin-bottom: 35px;">
+            <div class="feature-card">
+                <h3>📚 Schemes</h3>
+                <h2 id="statScholarships" style="color: #2563eb; font-size: 36px; margin: 10px 0;">3</h2>
+                <p>Available in Catalog</p>
+                <a href="scholarships.html" style="display: inline-block; margin-top: 10px; color: #2563eb; font-size: 13px; font-weight: 600;">Browse All &rarr;</a>
+            </div>
+
+            <div class="feature-card">
+                <h3>📋 Applications</h3>
+                <h2 id="statTotal" style="color: #0f172a; font-size: 36px; margin: 10px 0;">0</h2>
+                <p>Total Submitted</p>
+                <a href="status.html" style="display: inline-block; margin-top: 10px; color: #2563eb; font-size: 13px; font-weight: 600;">Track Detailed &rarr;</a>
+            </div>
+
+            <div class="feature-card">
+                <h3>⏳ In Verification</h3>
+                <h2 id="statPending" style="color: #d97706; font-size: 36px; margin: 10px 0;">0</h2>
+                <p>Under 4-Level Review</p>
+                <span style="display: inline-block; margin-top: 10px; color: #d97706; font-size: 13px; font-weight: 600;">Officer / HOD / Principal</span>
+            </div>
+
+            <div class="feature-card">
+                <h3>✅ Approved / Paid</h3>
+                <h2 id="statApproved" style="color: #16a34a; font-size: 36px; margin: 10px 0;">0</h2>
+                <p>Awarded Grants</p>
+                <span style="display: inline-block; margin-top: 10px; color: #16a34a; font-size: 13px; font-weight: 600;">Sanctioned</span>
+            </div>
+        </div>
+
+        <!-- Section: Active Applications & 4-Level Progress Stepper -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+            <h2 style="font-size: 22px; color: #0f172a; margin: 0;">My Active Scholarship Applications</h2>
+            <a href="apply.html" class="btn" style="background: #10b981; padding: 10px 20px; font-size: 14px;">➕ Submit New Application</a>
+        </div>
+
+        <div id="applicationsFeed">
+            <div style="text-align: center; padding: 50px; background: #ffffff; border-radius: 12px; color: #64748b;">
+                Loading your applications from database...
+            </div>
+        </div>
+
+    </section>
+
+    <!-- EDIT PROFILE MODAL -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>👤 Update Student Profile</h3>
+                <button class="modal-close-btn" onclick="closeModal('profileModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="profileForm">
+                    <label for="profName">Full Name *</label>
+                    <input type="text" id="profName" required>
+
+                    <label for="profEmail">Email Address (Read-only)</label>
+                    <input type="email" id="profEmail" disabled style="background: #f1f5f9;">
+
+                    <label for="profPhone">Mobile Number *</label>
+                    <input type="tel" id="profPhone" required>
+
+                    <label for="profCollege">College / Institution *</label>
+                    <input type="text" id="profCollege" required>
+
+                    <label for="profCourse">Course & Department *</label>
+                    <input type="text" id="profCourse" required>
+
+                    <label for="profCategory">Category</label>
+                    <select id="profCategory">
+                        <option value="General">General</option>
+                        <option value="OBC">OBC</option>
+                        <option value="SC">SC</option>
+                        <option value="ST">ST</option>
+                        <option value="EWS">EWS</option>
+                    </select>
+
+                    <label for="profIncome">Annual Family Income (₹) *</label>
+                    <input type="number" id="profIncome" required min="0" step="1000">
+
+                    <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" class="btn" style="background: #f1f5f9; color: #475569;" onclick="closeModal('profileModal')">Cancel</button>
+                        <button type="submit" class="btn" style="background: #2563eb;" id="btnSaveProfile">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUDIT HISTORY TIMELINE MODAL -->
+    <div class="modal-overlay" id="historyModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>📋 Complete 4-Level Approval Audit Trail</h3>
+                <button class="modal-close-btn" onclick="closeModal('historyModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="historyTrackingBadge" style="font-family: monospace; font-size: 14px; font-weight: bold; color: #2563eb; margin-bottom: 15px;"></div>
+                <div class="audit-timeline" id="historyTimeline"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" style="background: #f1f5f9; color: #475569;" onclick="closeModal('historyModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Student Scholarship Management Portal</p>
+    </footer>
+
+    <script>
+        const studentRaw = localStorage.getItem("student");
+        let student = null;
+
+        if (!studentRaw) {
+            window.location.href = "login.html";
+        } else {
+            try {
+                student = JSON.parse(studentRaw);
+                document.getElementById("welcomeHeader").textContent = `Welcome back, ${student.name} 👋`;
+                document.getElementById("dashStudentId").textContent = `#${student.id}`;
+                document.getElementById("dashEmail").textContent = student.email || "--";
+                document.getElementById("dashCollege").textContent = student.college || "--";
+                document.getElementById("dashCourse").textContent = student.course || "--";
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        document.getElementById("btnLogout").addEventListener("click", function(e) {
+            e.preventDefault();
+            localStorage.removeItem("student");
+            localStorage.removeItem("studentToken");
+            window.location.href = "login.html";
+        });
+
+        // Load stats and applications
+        async function loadDashboard() {
+            if (!student) return;
+
+            // Load Stats
+            try {
+                const sRes = await fetch(`/api/dashboard/stats?student_id=${student.id}`);
+                const stats = await sRes.json();
+                document.getElementById("statScholarships").textContent = stats.availableScholarships || 3;
+                document.getElementById("statTotal").textContent = stats.totalApplications || 0;
+                document.getElementById("statPending").textContent = stats.pending || 0;
+                document.getElementById("statApproved").textContent = (stats.approved || 0) + (stats.paid || 0);
+            } catch (e) {
+                console.error(e);
+            }
+
+            // Load Applications
+            try {
+                const appRes = await fetch(`/api/applications/student/${student.id}`);
+                const appData = await appRes.json();
+                renderApplications(appData.applications || []);
+            } catch (err) {
+                document.getElementById("applicationsFeed").innerHTML = `
+                    <div style="background: #fee2e2; color: #991b1b; padding: 20px; border-radius: 8px;">
+                        Failed to fetch applications from server.
+                    </div>
+                `;
+            }
+        }
+
+        function renderApplications(apps) {
+            const container = document.getElementById("applicationsFeed");
+            if (apps.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 50px; background: #ffffff; border-radius: 12px; border: 1px dashed #cbd5e1;">
+                        <div style="font-size: 40px; margin-bottom: 10px;">📋</div>
+                        <h3 style="color: #334155; margin-bottom: 8px;">No Scholarship Applications Yet</h3>
+                        <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Explore eligible schemes and apply to track your 4-level approval.</p>
+                        <a href="apply.html" class="btn">Apply for Scholarship Now</a>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = "";
+            apps.forEach(app => {
+                const card = document.createElement("div");
+                card.className = "app-status-card";
+
+                const s = app.status;
+                const isRejected = (s === "Rejected");
+                const isApprovedOrBeyond = ["Approved", "Payment Pending", "Paid"].includes(s);
+
+                // Level 1: Student
+                const l1State = { status: "Approved", pillClass: "level-status-approved", nodeClass: "approved", label: "Approved" };
+
+                // Level 2: Scholarship Officer
+                let l2State = { status: "Pending", pillClass: "level-status-pending", nodeClass: "pending", label: "Pending" };
+                // Level 3: Faculty / HOD
+                let l3State = { status: "Pending", pillClass: "level-status-pending", nodeClass: "pending", label: "Pending" };
+                // Level 4: Principal
+                let l4State = { status: "Pending", pillClass: "level-status-pending", nodeClass: "pending", label: "Pending" };
+
+                let currentLevelText = "";
+                let responsiblePerson = "";
+                let actionPending = "";
+                let nextLevelText = "";
+                let bannerClass = "current-level-banner";
+
+                if (isRejected) {
+                    bannerClass += " rejected";
+                    currentLevelText = `Rejected at ${app.rejected_by_role || "Verification"} Level`;
+                    responsiblePerson = "Workflow Terminated — No Action Pending";
+                    actionPending = `Application rejected. Reason: "${app.rejection_reason || 'Criteria requirements not met'}"`;
+                    nextLevelText = "None (Process Stopped)";
+
+                    if (app.rejected_by_role === "Scholarship Officer") {
+                        l2State = { status: "Rejected", pillClass: "level-status-rejected", nodeClass: "rejected", label: "Rejected" };
+                    } else if (app.rejected_by_role === "HOD") {
+                        l2State = { status: "Approved", pillClass: "level-status-approved", nodeClass: "approved", label: "Approved" };
+                        l3State = { status: "Rejected", pillClass: "level-status-rejected", nodeClass: "rejected", label: "Rejected" };
+                    } else if (app.rejected_by_role === "Principal") {
+                        l2State = { status: "Approved", pillClass: "level-status-approved", nodeClass: "approved", label: "Approved" };
+                        l3State = { status: "Approved", pillClass: "level-status-approved", nodeClass: "approved", label: "Approved" };
+                        l4State = { status: "Rejected", pillClass: "level-status-rejected", nodeClass: "rejected", label: "Rejected" };
+                    } else {
+                        l2State = { status: "Rejected", pillClass: "level-status-rejected", nodeClass: "rejected", label: "Rejected" };
+                    }
+                } else if (s === "Submitted" || s === "Under Verification") {
+                    currentLevelText = "Level 2: Scholarship Officer Document Verification";
+                    responsiblePerson = "Scholarship Officer (Scholarship Verification Cell)";
+                    actionPending = "Verify uploaded student Aadhar, Income Certificate, and basic scheme eligibility.";
+                    nextLevelText = "Level 3: Faculty / Department HOD";
+                    l2State = { status: "In Progress", pillClass: "level-status-inprogress", nodeClass: "in-progress", label: "In Progress" };
+                } else if (s === "Pending at HOD") {
+                    currentLevelText = "Level 3: Faculty / Department HOD Academic Verification";
+                    responsiblePerson = "Faculty / Department HOD (Academic Affairs)";
+                    actionPending = "Verify semester academic marks, college attendance, discipline, and recommend to Principal.";
+                    nextLevelText = "Level 4: College Principal";
+                    l2State = { status: "Approved", pillClass: "level-status-approved", nodeClass: "approved", label: "Approved" };
+                    l3State = { status: "In Progress", pillClass: "level-status-inprogress", nodeClass: "in-progress", label: "In Progress" };
+                } else if (s === "Pending at Principal") {
+                    currentLevelText = "Level 4: Principal Final Approval";
+                    responsiblePerson = "College Principal (Executive Sanction Authority)";
+                    actionPending = "Final institutional review of HOD recommendation and grant scholarship sanction.";
+                    nextLevelText = "Fund Disbursement (DBT)";
+                    l2State = { status: "Approved", pillClass: "level-status-approved", nodeClass: "approved", label: "Approved" };
+                    l3State = { status: "Approved", pillClass: "level-status-approved", nodeClass: "approved", label: "Approved" };
+                    l4State = { status: "In Progress", pillClass: "level-status-inprogress", nodeClass: "in-progress", label: "In Progress" };
+                } else if (isApprovedOrBeyond) {
+                    bannerClass += (s === "Paid" ? " paid" : " approved");
+                    currentLevelText = "Level 4 Completed: Final Institutional Approval Granted";
+                    responsiblePerson = (s === "Paid") ? "Completed (Finance Cell)" : "Finance & Treasury Cell";
+                    actionPending = (s === "Paid")
+                        ? "Scholarship funds successfully credited via Direct Benefit Transfer."
+                        : "Institutional sanction approved. Queued for Direct Benefit Transfer treasury disbursement.";
+                    nextLevelText = (s === "Paid") ? "None (Fully Disbursed)" : "Bank Transfer Confirmation";
+
+                    l2State = { status: "Approved", pillClass: "level-status-approved", nodeClass: "approved", label: "Approved" };
+                    l3State = { status: "Approved", pillClass: "level-status-approved", nodeClass: "approved", label: "Approved" };
+                    l4State = { status: "Approved", pillClass: "level-status-approved", nodeClass: "approved", label: "Approved" };
+                }
+
+                let badgeClass = "badge-submitted";
+                if (s === "Pending at HOD") badgeClass = "badge-pending-at-hod";
+                else if (s === "Pending at Principal") badgeClass = "badge-pending-at-principal";
+                else if (s === "Approved") badgeClass = "badge-approved";
+                else if (s === "Rejected") badgeClass = "badge-rejected";
+                else if (s === "Payment Pending") badgeClass = "badge-payment-pending";
+                else if (s === "Paid") badgeClass = "badge-paid";
+
+                const dateStr = app.applied_at ? new Date(app.applied_at).toLocaleDateString("en-IN", {
+                    day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
+                }) : "N/A";
+
+                const updatedStr = app.updated_at ? new Date(app.updated_at).toLocaleDateString("en-IN", {
+                    day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
+                }) : dateStr;
+
+                // Document links
+                let docLinks = "";
+                if (app.aadhar_doc) docLinks += `<a href="/uploads/${app.aadhar_doc}" target="_blank" class="doc-chip">📄 Aadhar Card</a>`;
+                if (app.income_doc) docLinks += `<a href="/uploads/${app.income_doc}" target="_blank" class="doc-chip">💰 Income Certificate</a>`;
+                if (app.marks_doc) docLinks += `<a href="/uploads/${app.marks_doc}" target="_blank" class="doc-chip">📈 Marks Memo</a>`;
+                if (app.bonafide_doc) docLinks += `<a href="/uploads/${app.bonafide_doc}" target="_blank" class="doc-chip">🏛️ Bonafide Certificate</a>`;
+                if (!docLinks) docLinks = `<span style="color: #94a3b8; font-size: 13px;">No documents</span>`;
+
+                // Post-Principal Approval and Separate Payment Status Card (Requirement 8)
+                let disbursementSectionHtml = "";
+                if (isApprovedOrBeyond) {
+                    const isPaid = (s === "Paid" || app.payment_status === "Paid");
+                    const payStatusLabel = isPaid ? "Paid (Disbursed)" : "Payment Pending";
+                    const payPillClass = isPaid ? "badge-paid" : "badge-payment-pending";
+                    const refDisplay = app.payment_reference || "DBT-TXN-PENDING";
+                    const payDateDisplay = app.payment_date ? new Date(app.payment_date).toLocaleDateString("en-IN", {
+                        day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
+                    }) : (isPaid ? updatedStr : "Awaiting Treasury Processing");
+
+                    disbursementSectionHtml = `
+                        <div class="disbursement-card ${isPaid ? '' : 'pending-pay'}">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                                <div>
+                                    <h3 style="margin: 0; font-size: 17px; color: ${isPaid ? '#0f766e' : '#6d28d9'}; display: flex; align-items: center; gap: 8px;">
+                                        ${isPaid ? '💰 Scholarship Fund Disbursement Complete' : '⏳ Scholarship Sanctioned & Payment Queued'}
+                                    </h3>
+                                    <p style="margin: 3px 0 0 0; font-size: 13px; color: #64748b;">
+                                        Principal institutional approval confirmed. Fund disbursement handled by Central Finance Treasury.
+                                    </p>
+                                </div>
+                                <div>
+                                    <span class="badge ${payPillClass}" style="font-size: 13px; padding: 6px 14px;">${payStatusLabel}</span>
+                                </div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; background: #ffffff; padding: 14px 18px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13px;">
+                                <div>
+                                    <strong style="color: #64748b; font-size: 11px; text-transform: uppercase;">Institutional Approval</strong><br>
+                                    <span style="color: #16a34a; font-weight: 700;">✅ Approved by Principal</span>
+                                </div>
+                                <div>
+                                    <strong style="color: #64748b; font-size: 11px; text-transform: uppercase;">Actual Payment Status</strong><br>
+                                    <span style="color: ${isPaid ? '#0f766e' : '#7e22ce'}; font-weight: 700;">${payStatusLabel}</span>
+                                </div>
+                                <div>
+                                    <strong style="color: #64748b; font-size: 11px; text-transform: uppercase;">Payment Reference / UTR</strong><br>
+                                    <span style="font-family: monospace; font-weight: 600; color: #0f172a;">${refDisplay}</span>
+                                </div>
+                                <div>
+                                    <strong style="color: #64748b; font-size: 11px; text-transform: uppercase;">Payment Disbursed Date</strong><br>
+                                    <span style="color: #334155;">${payDateDisplay}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Level 2 (Officer) Remarks
+                let l2RemarksHtml = "";
+                if (l2State.status === "Approved") {
+                    l2RemarksHtml = `<div class="v-remarks-box">📝 <strong>Officer Remarks:</strong> ${escapeHtml(app.officer_remarks || "Verified student eligibility certificates and documents.")}</div>`;
+                } else if (l2State.status === "Rejected") {
+                    l2RemarksHtml = `<div class="v-rejection-box">❌ <strong>Rejection Reason:</strong> ${escapeHtml(app.rejection_reason || "Documents could not be verified.")}</div>`;
+                } else if (l2State.status === "In Progress") {
+                    l2RemarksHtml = `<div class="v-remarks-box" style="background: #eff6ff; border-color: #bfdbfe; color: #1e40af;">⏳ <strong>Current Status:</strong> Scholarship Officer is verifying identity, income certificates, and basic eligibility.</div>`;
+                }
+
+                // Level 3 (HOD) Remarks
+                let l3RemarksHtml = "";
+                if (l3State.status === "Approved") {
+                    l3RemarksHtml = `<div class="v-remarks-box">📝 <strong>HOD Recommendation:</strong> ${escapeHtml(app.hod_remarks || "Academic percentage and semester transcripts verified. Candidate recommended.")}</div>`;
+                } else if (l3State.status === "Rejected") {
+                    l3RemarksHtml = `<div class="v-rejection-box">❌ <strong>Rejection Reason:</strong> ${escapeHtml(app.rejection_reason || "Academic criteria unmet.")}</div>`;
+                } else if (l3State.status === "In Progress") {
+                    l3RemarksHtml = `<div class="v-remarks-box" style="background: #eff6ff; border-color: #bfdbfe; color: #1e40af;">⏳ <strong>Current Status:</strong> Faculty/HOD is verifying academic standing, attendance records, and preparing institutional recommendation.</div>`;
+                }
+
+                // Level 4 (Principal) Remarks
+                let l4RemarksHtml = "";
+                if (l4State.status === "Approved") {
+                    l4RemarksHtml = `<div class="v-remarks-box">📝 <strong>Principal Sanction Note:</strong> ${escapeHtml(app.principal_remarks || "Final approval sanctioned under institutional scholarship scheme.")}</div>`;
+                } else if (l4State.status === "Rejected") {
+                    l4RemarksHtml = `<div class="v-rejection-box">❌ <strong>Rejection Reason:</strong> ${escapeHtml(app.rejection_reason || "Final institutional sanction denied.")}</div>`;
+                } else if (l4State.status === "In Progress") {
+                    l4RemarksHtml = `<div class="v-remarks-box" style="background: #eff6ff; border-color: #bfdbfe; color: #1e40af;">⏳ <strong>Current Status:</strong> College Principal is reviewing HOD recommendation for final scholarship sanction.</div>`;
+                }
+
+                card.innerHTML = `
+                    <!-- 1. APPLICATION HEADER (ID, Scholarship Name, Submission Date, Current Status) -->
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; padding-bottom: 18px; border-bottom: 1px solid #e2e8f0;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                                <span style="font-family: monospace; font-size: 17px; font-weight: 800; color: #2563eb; background: #eff6ff; padding: 4px 10px; border-radius: 6px; border: 1px solid #bfdbfe;">
+                                    ${escapeHtml(app.tracking_id)}
+                                </span>
+                                <span style="font-size: 13px; color: #64748b; font-weight: 600;">(Application #${app.id})</span>
+                            </div>
+                            <h2 style="font-size: 21px; color: #0f172a; margin: 4px 0 6px 0;">${escapeHtml(app.scholarship_name)}</h2>
+                            <div style="font-size: 13.5px; color: #475569;">
+                                👤 <strong>${escapeHtml(app.full_name)}</strong> &bull; ${escapeHtml(app.college || "")} (${escapeHtml(app.course || "")})
+                                &bull; Academic: <strong>${app.academic_percentage}%</strong>
+                                &bull; Annual Income: <strong>₹${Number(app.annual_income).toLocaleString("en-IN")}</strong>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span class="badge ${badgeClass}" style="font-size: 13px; padding: 6px 14px;">${escapeHtml(app.status)}</span>
+                            <div style="font-size: 12px; color: #64748b; margin-top: 6px;">
+                                Submitted: <strong>${dateStr}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. CURRENT LEVEL & RESPONSIBILITY BANNER (Requirements 3, 4, 7) -->
+                    <div class="${bannerClass}">
+                        <div class="banner-item">
+                            <span class="banner-label">📍 Current Approval Level</span>
+                            <span class="banner-value ${isRejected ? 'highlight-red' : (isApprovedOrBeyond ? 'highlight-green' : 'highlight-blue')}">
+                                ${currentLevelText}
+                            </span>
+                        </div>
+                        <div class="banner-item">
+                            <span class="banner-label">👤 Currently Responsible</span>
+                            <span class="banner-value">${responsiblePerson}</span>
+                        </div>
+                        <div class="banner-item" style="max-width: 320px;">
+                            <span class="banner-label">⏳ Action Pending</span>
+                            <span style="font-size: 13px; color: #334155; line-height: 1.4;">${actionPending}</span>
+                        </div>
+                        <div class="banner-item">
+                            <span class="banner-label">⏭️ Next Level</span>
+                            <span class="banner-value" style="color: #64748b; font-size: 13.5px;">${nextLevelText}</span>
+                        </div>
+                    </div>
+
+                    <!-- 3. FOUR-LEVEL VERTICAL PROGRESS TRACKER (Requirements 2, 5, 6) -->
+                    <h3 style="font-size: 16px; color: #334155; margin-bottom: 18px; text-transform: uppercase; letter-spacing: 0.5px;">
+                        Four-Level Sequential Workflow Tracker
+                    </h3>
+
+                    <div class="v-tracker-container">
+                        
+                        <!-- LEVEL 1: STUDENT (Application Submitted) -->
+                        <div class="v-step ${l1State.nodeClass}">
+                            <div class="v-step-node">1</div>
+                            <div class="v-step-content">
+                                <div class="v-step-header">
+                                    <div class="v-step-title">
+                                        Level 1: Student &mdash; Application Submitted
+                                    </div>
+                                    <span class="level-status-pill ${l1State.pillClass}">${l1State.label}</span>
+                                </div>
+                                <div class="v-step-role">
+                                    <strong>Responsible:</strong> Student (${escapeHtml(app.full_name)}) &bull; <strong>Submitted On:</strong> ${dateStr}
+                                </div>
+                                <div class="v-remarks-box">
+                                    📄 Initial scholarship application submitted with personal profile, academic score (${app.academic_percentage}%), income declaration, and uploaded certificates.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- LEVEL 2: SCHOLARSHIP OFFICER (Document Verification) -->
+                        <div class="v-step ${l2State.nodeClass}">
+                            <div class="v-step-node">2</div>
+                            <div class="v-step-content">
+                                <div class="v-step-header">
+                                    <div class="v-step-title">
+                                        Level 2: Scholarship Officer &mdash; Document Verification
+                                    </div>
+                                    <span class="level-status-pill ${l2State.pillClass}">${l2State.label}</span>
+                                </div>
+                                <div class="v-step-role">
+                                    <strong>Responsible:</strong> Scholarship Officer (Scholarship Cell)
+                                    ${(l2State.status !== 'Pending') ? `&bull; <strong>Status Date:</strong> ${updatedStr}` : ''}
+                                </div>
+                                ${l2RemarksHtml}
+                            </div>
+                        </div>
+
+                        <!-- LEVEL 3: FACULTY / HOD (Academic Verification & Recommendation) -->
+                        <div class="v-step ${l3State.nodeClass}">
+                            <div class="v-step-node">3</div>
+                            <div class="v-step-content">
+                                <div class="v-step-header">
+                                    <div class="v-step-title">
+                                        Level 3: Faculty / HOD &mdash; Academic Verification & Recommendation
+                                    </div>
+                                    <span class="level-status-pill ${l3State.pillClass}">${l3State.label}</span>
+                                </div>
+                                <div class="v-step-role">
+                                    <strong>Responsible:</strong> Faculty / Department HOD (Academic Affairs)
+                                    ${(l3State.status !== 'Pending') ? `&bull; <strong>Status Date:</strong> ${updatedStr}` : ''}
+                                </div>
+                                ${l3RemarksHtml}
+                            </div>
+                        </div>
+
+                        <!-- LEVEL 4: PRINCIPAL (Final Approval) -->
+                        <div class="v-step ${l4State.nodeClass}">
+                            <div class="v-step-node">4</div>
+                            <div class="v-step-content">
+                                <div class="v-step-header">
+                                    <div class="v-step-title">
+                                        Level 4: Principal &mdash; Final Institutional Approval
+                                    </div>
+                                    <span class="level-status-pill ${l4State.pillClass}">${l4State.label}</span>
+                                </div>
+                                <div class="v-step-role">
+                                    <strong>Responsible:</strong> College Principal (Institutional Authority)
+                                    ${(l4State.status !== 'Pending') ? `&bull; <strong>Decision Date:</strong> ${updatedStr}` : ''}
+                                </div>
+                                ${l4RemarksHtml}
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- 4. POST-PRINCIPAL APPROVAL & SEPARATE PAYMENT STATUS (Requirement 8) -->
+                    ${disbursementSectionHtml}
+
+                    <!-- 5. UPLOADED DOCUMENTS & FULL TIMELINE AUDIT BUTTON -->
+                    <div style="margin-top: 25px; padding-top: 18px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                        <div>
+                            <span style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-right: 8px;">Uploaded Documents:</span>
+                            ${docLinks}
+                        </div>
+                        <div>
+                            <button class="btn" style="background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; padding: 9px 18px; font-size: 13.5px;" onclick="viewHistory(${app.id}, '${escapeHtml(app.tracking_id)}')">
+                                📜 View Complete MySQL Audit Trail &rarr;
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+
+                container.appendChild(card);
+            });
+        }
+
+        // Profile Modal
+        async function openProfileModal() {
+            if (!student) return;
+            try {
+                const res = await fetch(`/api/student/profile/${student.id}`);
+                const data = await res.json();
+                if (data.profile) {
+                    const p = data.profile;
+                    document.getElementById("profName").value = p.full_name || student.name;
+                    document.getElementById("profEmail").value = p.email || student.email;
+                    document.getElementById("profPhone").value = p.phone || student.phone || "";
+                    document.getElementById("profCollege").value = p.college || student.college || "";
+                    document.getElementById("profCourse").value = p.course || student.course || "";
+                    document.getElementById("profCategory").value = p.category || student.category || "General";
+                    document.getElementById("profIncome").value = p.annual_income || student.annual_income || "";
+                }
+            } catch (err) {
+                console.error(err);
+            }
+            document.getElementById("profileModal").style.display = "flex";
+        }
+
+        document.getElementById("profileForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const full_name = document.getElementById("profName").value.trim();
+            const phone = document.getElementById("profPhone").value.trim();
+            const college = document.getElementById("profCollege").value.trim();
+            const course = document.getElementById("profCourse").value.trim();
+            const category = document.getElementById("profCategory").value;
+            const annual_income = document.getElementById("profIncome").value;
+
+            const btn = document.getElementById("btnSaveProfile");
+            btn.disabled = true;
+            btn.textContent = "Saving...";
+
+            try {
+                const res = await fetch(`/api/student/profile/${student.id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ full_name, phone, college, course, category, annual_income })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    // Update local storage
+                    student.name = full_name;
+                    student.college = college;
+                    student.course = course;
+                    student.phone = phone;
+                    student.category = category;
+                    student.annual_income = annual_income;
+                    localStorage.setItem("student", JSON.stringify(student));
+
+                    document.getElementById("welcomeHeader").textContent = `Welcome back, ${student.name} 👋`;
+                    document.getElementById("dashCollege").textContent = student.college;
+                    document.getElementById("dashCourse").textContent = student.course;
+
+                    closeModal("profileModal");
+                    showNotice("Profile updated successfully!", "success");
+                } else {
+                    alert(data.message || "Failed to update profile.");
+                }
+            } catch (e) {
+                alert("Server error updating profile.");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Save Changes";
+            }
+        });
+
+        async function viewHistory(appId, trackingId) {
+            document.getElementById("historyTrackingBadge").textContent = `Tracking ID: ${trackingId}`;
+            const timeline = document.getElementById("historyTimeline");
+            timeline.innerHTML = "<p>Loading history records...</p>";
+            document.getElementById("historyModal").style.display = "flex";
+
+            try {
+                const res = await fetch(`/api/applications/${appId}/history`);
+                const data = await res.json();
+                const history = data.history || [];
+
+                if (history.length === 0) {
+                    timeline.innerHTML = "<p style='color: #64748b;'>No audit history logs recorded yet.</p>";
+                    return;
+                }
+
+                timeline.innerHTML = "";
+                history.forEach(h => {
+                    const eventDiv = document.createElement("div");
+                    eventDiv.className = "timeline-event";
+                    const isReject = h.action.toLowerCase().includes("reject");
+                    const isApproved = h.action.toLowerCase().includes("approv") || h.action.toLowerCase().includes("paid");
+
+                    let dotClass = "timeline-dot";
+                    if (isReject) dotClass += " rejected";
+                    else if (isApproved) dotClass += " completed";
+
+                    const timeStr = new Date(h.timestamp).toLocaleString("en-IN", {
+                        day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
+                    });
+
+                    eventDiv.innerHTML = `
+                        <div class="${dotClass}"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-time">${timeStr}</span>
+                            <div style="font-weight: 700; color: #0f172a; margin-bottom: 2px;">
+                                [${escapeHtml(h.stage)}] ${escapeHtml(h.action)}
+                            </div>
+                            <div style="font-size: 12px; color: #475569; margin-bottom: 6px;">
+                                By: <strong>${escapeHtml(h.actor_name)}</strong> (${escapeHtml(h.actor_role)})
+                            </div>
+                            <div style="font-size: 13px; color: #334155; background: #ffffff; padding: 8px 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                                "${escapeHtml(h.remarks || "No remarks.")}"
+                            </div>
+                        </div>
+                    `;
+                    timeline.appendChild(eventDiv);
+                });
+            } catch (err) {
+                timeline.innerHTML = "<p style='color: #dc2626;'>Failed to load history.</p>";
+            }
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = "none";
+        }
+
+        function showNotice(msg, type) {
+            const el = document.getElementById("dashNotice");
+            el.style.display = "block";
+            el.textContent = msg;
+            if (type === "success") {
+                el.style.background = "#dcfce7";
+                el.style.color = "#166534";
+                el.style.border = "1px solid #86efac";
+            } else {
+                el.style.background = "#fee2e2";
+                el.style.color = "#991b1b";
+                el.style.border = "1px solid #fca5a5";
+            }
+            setTimeout(() => { el.style.display = "none"; }, 5000);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return "";
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        loadDashboard();
+    </script>
+
+</body>
+
+</html>

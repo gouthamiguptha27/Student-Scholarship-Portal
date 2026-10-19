@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Scholarship Portal</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+
+    <header>
+        <nav class="navbar">
+
+            <h2>🎓 Scholarship Portal</h2>
+
+            <div class="nav-links">
+                <a href="index.html" class="active">Home</a>
+                <a href="scholarships.html">Scholarships</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="status.html">Track Status</a>
+                <a href="login.html" id="navAuth">Login</a>
+                <a href="register.html">Register</a>
+                <a href="admin.html" style="color: #f59e0b; font-weight: bold;">Admin</a>
+            </div>
+
+        </nav>
+    </header>
+
+
+    <!-- Hero Section -->
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <h1>
+                Find the Right Scholarship
+                for Your Education
+            </h1>
+
+            <p>
+                Discover scholarships and financial
+                support opportunities for your education.
+            </p>
+
+            <a href="scholarships.html" class="btn">
+                Find Scholarships
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- Features -->
+
+    <section class="features">
+
+        <h2>Why Use Our Portal?</h2>
+
+        <div class="feature-container">
+
+            <div class="feature-card">
+                <h3>🔍 Find Scholarships</h3>
+                <p>
+                    Easily search for scholarships
+                    suitable for your education.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3>✅ Check Eligibility</h3>
+                <p>
+                    Understand scholarship eligibility
+                    requirements.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3>📄 Easy Application</h3>
+                <p>
+                    Apply for scholarships through
+                    a simple online form.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3>📊 Multi-Level Tracking</h3>
+                <p>
+                    Track real-time decisions from Officer, HOD, and Principal.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- 4-Level Approval Workflow Overview -->
+    <section class="features" style="background: #f8fafc; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+        <h2>Institutional 4-Level Approval Process</h2>
+        <p style="color: #64748b; margin-top: -20px; margin-bottom: 35px; font-size: 16px;">
+            Sequential, tamper-proof verification designed for complete transparency and accountability.
+        </p>
+
+        <div class="feature-container" style="text-align: left;">
+            <div class="feature-card" style="background: #ffffff; border-top: 4px solid #2563eb;">
+                <span style="font-weight: bold; color: #2563eb; font-size: 12px;">LEVEL 1</span>
+                <h3 style="margin-top: 5px;">Scholarship Officer</h3>
+                <p style="font-size: 13.5px;">
+                    Verifies student identity, income certificates, and basic scheme eligibility criteria.
+                </p>
+            </div>
+
+            <div class="feature-card" style="background: #ffffff; border-top: 4px solid #d97706;">
+                <span style="font-weight: bold; color: #d97706; font-size: 12px;">LEVEL 2</span>
+                <h3 style="margin-top: 5px;">Department HOD</h3>
+                <p style="font-size: 13.5px;">
+                    Validates academic performance, attendance records, discipline, and course progress.
+                </p>
+            </div>
+
+            <div class="feature-card" style="background: #ffffff; border-top: 4px solid #7e22ce;">
+                <span style="font-weight: bold; color: #7e22ce; font-size: 12px;">LEVEL 3</span>
+                <h3 style="margin-top: 5px;">College Principal</h3>
+                <p style="font-size: 13.5px;">
+                    Performs institutional executive review and grants final sanction for scholarship awards.
+                </p>
+            </div>
+
+            <div class="feature-card" style="background: #ffffff; border-top: 4px solid #059669;">
+                <span style="font-weight: bold; color: #059669; font-size: 12px;">LEVEL 4</span>
+                <h3 style="margin-top: 5px;">Fund Disbursement</h3>
+                <p style="font-size: 13.5px;">
+                    Financial treasury DBT transfer to student bank account with verifiable audit logging.
+                </p>
+            </div>
+        </div>
+
+        <div style="margin-top: 35px;">
+            <a href="login.html" class="btn" style="margin-right: 15px;">Login to Portal</a>
+            <a href="register.html" class="btn" style="background: #10b981;">New Student Registration</a>
+        </div>
+    </section>
+
+
+    <!-- Footer -->
+
+    </footer>
+
+    <script>
+        const studentRaw = localStorage.getItem("student");
+        if (studentRaw) {
+            try {
+                const s = JSON.parse(studentRaw);
+                const navAuth = document.getElementById("navAuth");
+                if (navAuth) {
+                    navAuth.textContent = `Logout (${s.name.split(" ")[0]})`;
+                    navAuth.href = "#";
+                    navAuth.onclick = (e) => {
+                        e.preventDefault();
+                        localStorage.removeItem("student");
+                        window.location.reload();
+                    };
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    </script>
+</body>
+
+</html>

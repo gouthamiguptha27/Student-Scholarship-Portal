@@ -1,0 +1,657 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f7fb;
+    color: #333;
+}
+
+
+/* Navbar */
+
+.navbar {
+    height: 70px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 60px;
+
+    background-color: white;
+
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.navbar h2 {
+    color: #2563eb;
+}
+
+.nav-links {
+    display: flex;
+    gap: 25px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+.nav-links a:hover {
+    color: #2563eb;
+}
+
+
+/* Hero */
+
+.hero {
+    min-height: 500px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+
+    padding: 40px;
+}
+
+.hero-content {
+    max-width: 750px;
+}
+
+.hero h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.hero p {
+    font-size: 20px;
+    color: #666;
+
+    margin-bottom: 30px;
+}
+
+
+/* Button */
+
+.btn {
+    display: inline-block;
+
+    padding: 14px 28px;
+
+    background-color: #2563eb;
+    color: white;
+
+    text-decoration: none;
+
+    border-radius: 8px;
+
+    font-weight: bold;
+}
+
+.btn:hover {
+    background-color: #1d4ed8;
+}
+
+
+/* Features */
+
+.features {
+    padding: 60px;
+    text-align: center;
+
+    background-color: white;
+}
+
+.features h2 {
+    margin-bottom: 40px;
+    font-size: 32px;
+}
+
+.feature-container {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+
+    flex-wrap: wrap;
+}
+
+.feature-card {
+    width: 250px;
+
+    padding: 30px;
+
+    background-color: #f5f7fb;
+
+    border-radius: 10px;
+
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.feature-card h3 {
+    margin-bottom: 15px;
+}
+
+.feature-card p {
+    color: #666;
+}
+
+
+/* Footer */
+
+footer {
+    text-align: center;
+    padding: 25px;
+    background-color: #111827;
+    color: white;
+}
+
+/* =========================================
+   FOUR-LEVEL WORKFLOW & DASHBOARD STYLES
+   ========================================= */
+
+/* Status Badges */
+.badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+.badge-submitted {
+    background-color: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+.badge-under-verification {
+    background-color: #e0e7ff;
+    color: #4338ca;
+    border: 1px solid #c7d2fe;
+}
+.badge-pending-at-hod {
+    background-color: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+}
+.badge-pending-at-principal {
+    background-color: #ffedd5;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+}
+.badge-approved {
+    background-color: #dcfce7;
+    color: #15803d;
+    border: 1px solid #86efac;
+}
+.badge-rejected {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+}
+.badge-payment-pending {
+    background-color: #f3e8ff;
+    color: #7e22ce;
+    border: 1px solid #e9d5ff;
+}
+.badge-paid {
+    background-color: #ccfbf1;
+    color: #0f766e;
+    border: 1px solid #99f6e4;
+}
+
+/* 4-Level Visual Progress Stepper */
+.workflow-stepper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    margin: 25px 0 20px 0;
+    padding: 0 10px;
+}
+.workflow-stepper::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 40px;
+    right: 40px;
+    height: 3px;
+    background: #e2e8f0;
+    z-index: 1;
+}
+.step-item {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    flex: 1;
+}
+.step-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #64748b;
+    border: 2px solid #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px auto;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+.step-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+}
+.step-item.completed .step-circle {
+    background: #10b981;
+    border-color: #10b981;
+    color: #ffffff;
+}
+.step-item.completed .step-title {
+    color: #059669;
+}
+.step-item.active .step-circle {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+}
+.step-item.active .step-title {
+    color: #1d4ed8;
+    font-weight: 700;
+}
+.step-item.rejected .step-circle {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+}
+.step-item.rejected .step-title {
+    color: #b91c1c;
+    font-weight: 700;
+}
+
+/* Modals */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.65);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+}
+.modal-card {
+    background: #ffffff;
+    border-radius: 12px;
+    max-width: 650px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    animation: modalSlide 0.25s ease-out;
+}
+@keyframes modalSlide {
+    from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+.modal-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.modal-header h3 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 18px;
+}
+.modal-close-btn {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #94a3b8;
+    line-height: 1;
+}
+.modal-close-btn:hover {
+    color: #334155;
+}
+.modal-body {
+    padding: 24px;
+}
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    background: #f8fafc;
+    border-radius: 0 0 12px 12px;
+}
+
+/* Timeline Audit Trail */
+.audit-timeline {
+    position: relative;
+    padding-left: 28px;
+    margin: 15px 0;
+}
+.audit-timeline::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 8px;
+    bottom: 5px;
+    width: 2px;
+    background: #cbd5e1;
+}
+.timeline-event {
+    position: relative;
+    margin-bottom: 20px;
+}
+.timeline-dot {
+    position: absolute;
+    left: -28px;
+    top: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #2563eb;
+    border: 3px solid #ffffff;
+    box-shadow: 0 0 0 1px #93c5fd;
+}
+.timeline-dot.rejected {
+    background: #dc2626;
+    box-shadow: 0 0 0 1px #fca5a5;
+}
+.timeline-dot.completed {
+    background: #16a34a;
+    box-shadow: 0 0 0 1px #86efac;
+}
+.timeline-content {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 12px 16px;
+    border-radius: 8px;
+}
+.timeline-time {
+    font-size: 11px;
+    color: #64748b;
+    float: right;
+}
+
+/* ==================================================
+   FOUR-LEVEL VERTICAL PROGRESS TRACKER STYLES
+   ================================================== */
+
+.v-tracker-container {
+    position: relative;
+    margin: 25px 0 35px 0;
+    padding: 0 5px;
+}
+
+/* Current Level & Responsibility Banner */
+.current-level-banner {
+    background: #f0f7ff;
+    border: 1px solid #bfdbfe;
+    border-left: 5px solid #2563eb;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.current-level-banner.rejected {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    border-left-color: #dc2626;
+}
+.current-level-banner.approved {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    border-left-color: #16a34a;
+}
+.current-level-banner.paid {
+    background: #f0fdfa;
+    border-color: #99f6e4;
+    border-left-color: #0d9488;
+}
+
+.banner-item {
+    display: flex;
+    flex-direction: column;
+}
+.banner-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #64748b;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+.banner-value {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #0f172a;
+}
+.banner-value.highlight-blue {
+    color: #1d4ed8;
+}
+.banner-value.highlight-red {
+    color: #dc2626;
+}
+.banner-value.highlight-green {
+    color: #16a34a;
+}
+
+/* Vertical Steps */
+.v-step {
+    position: relative;
+    display: flex;
+    gap: 20px;
+    padding-bottom: 28px;
+}
+.v-step:last-child {
+    padding-bottom: 0;
+}
+
+/* Connecting Line between steps */
+.v-step::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 40px;
+    bottom: 0;
+    width: 2px;
+    background: #e2e8f0;
+    z-index: 1;
+}
+.v-step:last-child::before {
+    display: none;
+}
+.v-step.completed::before {
+    background: #10b981;
+}
+.v-step.step-rejected::before {
+    background: #e2e8f0;
+}
+
+/* Step Node Icon/Badge */
+.v-step-node {
+    position: relative;
+    z-index: 2;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 3px solid #cbd5e1;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 15px;
+    flex-shrink: 0;
+    transition: all 0.25s ease;
+}
+
+/* Node Variants */
+.v-step.approved .v-step-node,
+.v-step.completed .v-step-node {
+    background: #10b981;
+    border-color: #059669;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+}
+.v-step.in-progress .v-step-node {
+    background: #2563eb;
+    border-color: #1d4ed8;
+    color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+    animation: nodePulse 2s infinite;
+}
+@keyframes nodePulse {
+    0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+}
+.v-step.rejected .v-step-node {
+    background: #ef4444;
+    border-color: #dc2626;
+    color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+}
+.v-step.pending .v-step-node {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #94a3b8;
+}
+
+/* Step Content Card */
+.v-step-content {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 18px 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    transition: all 0.2s ease;
+}
+.v-step.in-progress .v-step-content {
+    border: 2px solid #3b82f6;
+    background: #ffffff;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.08);
+}
+.v-step.rejected .v-step-content {
+    border-left: 5px solid #dc2626;
+    background: #fffafa;
+}
+.v-step.approved .v-step-content {
+    border-left: 4px solid #10b981;
+}
+
+.v-step-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.v-step-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.v-step-role {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 10px;
+}
+
+/* Level Status Badges (Pending, In Progress, Approved, Rejected) */
+.level-status-pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+.level-status-approved {
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #86efac;
+}
+.level-status-inprogress {
+    background: #dbeafe;
+    color: #1e40af;
+    border: 1px solid #93c5fd;
+}
+.level-status-pending {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #cbd5e1;
+}
+.level-status-rejected {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+}
+
+.v-remarks-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #334155;
+    margin-top: 10px;
+    line-height: 1.5;
+}
+.v-rejection-box {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-size: 13.5px;
+    color: #991b1b;
+    margin-top: 10px;
+    line-height: 1.5;
+}
+
+/* Post-Principal Approval & Payment Status Card (Requirement 8) */
+.disbursement-card {
+    background: linear-gradient(to right, #f8fafc, #ffffff);
+    border: 2px solid #0d9488;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-top: 25px;
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.08);
+}
+.disbursement-card.pending-pay {
+    border-color: #8b5cf6;
+}
+

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply for Scholarship - Scholarship Portal</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/register.css">
+    <style>
+        .doc-upload-box {
+            background: #ffffff;
+            border: 1px dashed #cbd5e1;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+        .doc-upload-box label {
+            margin-top: 0;
+            font-size: 13.5px;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <nav class="navbar">
+            <h2>🎓 Scholarship Portal</h2>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="scholarships.html">Scholarships</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="status.html">Track Status</a>
+                <a href="login.html" id="navAuth">Login</a>
+                <a href="admin.html" style="color: #f59e0b; font-weight: bold;">Admin</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="form-section" style="max-width: 680px; margin: 40px auto; padding: 30px; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+        <h2 style="text-align: center; color: #1e3a8a; margin-bottom: 8px;">📋 Scholarship Application Form</h2>
+        <p style="text-align: center; color: #6b7280; margin-bottom: 25px; font-size: 14px;">
+            Submit your application details below. Your application will undergo our 4-Level sequential verification workflow (Officer &rarr; HOD &rarr; Principal &rarr; Disbursement).
+        </p>
+
+        <!-- Auth warning/info banner -->
+        <div id="authNotice" style="display: none; background: #eff6ff; border-left: 4px solid #3b82f6; padding: 12px 15px; margin-bottom: 20px; border-radius: 4px; font-size: 14px; color: #1e40af;">
+            ℹ️ Logged in as: <strong id="loggedStudentName"></strong> (Student ID: <strong id="loggedStudentId"></strong>)
+        </div>
+
+        <div id="loginPrompt" style="display: none; background: #fffbeb; border-left: 4px solid #f59e0b; padding: 12px 15px; margin-bottom: 20px; border-radius: 4px; font-size: 14px; color: #92400e;">
+            ⚠️ You are not logged in. Please <a href="login.html" style="color: #2563eb; font-weight: bold;">Log in here</a> so your student profile details auto-populate.
+        </div>
+
+        <form id="scholarshipApplicationForm">
+            <!-- Student Information -->
+            <div style="background: #f8fafc; padding: 18px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+                <h3 style="font-size: 15px; color: #1e293b; margin-bottom: 12px;">👤 Student Identification</h3>
+
+                <label for="app-student-id">Student ID (Registered ID) *</label>
+                <input type="number" id="app-student-id" placeholder="Enter your registered student ID (e.g. 1)" required min="1">
+
+                <label for="app-name">Student Full Name</label>
+                <input type="text" id="app-name" placeholder="Full name will populate upon login">
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div>
+                        <label for="app-college">College</label>
+                        <input type="text" id="app-college" placeholder="College name">
+                    </div>
+                    <div>
+                        <label for="app-course">Course</label>
+                        <input type="text" id="app-course" placeholder="Course name">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scholarship Choice -->
+            <div style="background: #f8fafc; padding: 18px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+                <h3 style="font-size: 15px; color: #1e293b; margin-bottom: 12px;">🎓 Scholarship Scheme Selection</h3>
+
+                <label for="app-scholarship-select">Choose Scholarship Scheme *</label>
+                <select id="app-scholarship-select" required>
+                    <option value="">-- Loading available schemes from MySQL... --</option>
+                </select>
+
+                <input type="hidden" id="app-scholarship-id" value="">
+                <input type="hidden" id="app-scholarship-name" value="">
+                <div id="schDetailHint" style="margin-top: 8px; font-size: 13px; color: #059669; font-weight: 500;"></div>
+            </div>
+
+            <!-- Academic & Financial Details -->
+            <div style="background: #f8fafc; padding: 18px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+                <h3 style="font-size: 15px; color: #1e293b; margin-bottom: 12px;">📈 Eligibility & Academic Performance</h3>
+
+                <label for="app-percentage">Latest Academic Percentage / Aggregate (%) *</label>
+                <input type="number" id="app-percentage" placeholder="e.g. 85.5" min="0" max="100" step="0.01" required>
+
+                <label for="app-income">Annual Family Income (₹) *</label>
+                <input type="number" id="app-income" placeholder="e.g. 150000" min="0" step="1000" required>
+            </div>
+
+            <!-- Required Documents Upload (Multipart) -->
+            <div style="background: #f8fafc; padding: 18px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+                <h3 style="font-size: 15px; color: #1e293b; margin-bottom: 6px;">📑 Upload Required Supporting Documents</h3>
+                <p style="font-size: 12px; color: #64748b; margin-bottom: 14px;">Accepted file formats: PDF, JPEG, PNG (Max 5MB per document).</p>
+
+                <div class="doc-upload-box">
+                    <label for="doc-aadhar">
+                        <span>Aadhar Card Document *</span>
+                        <span style="font-size: 11px; color: #64748b;">Identity Verification</span>
+                    </label>
+                    <input type="file" id="doc-aadhar" accept=".pdf,.jpg,.jpeg,.png">
+                </div>
+
+                <div class="doc-upload-box">
+                    <label for="doc-income">
+                        <span>Income Certificate (MRO/Tahsildar) *</span>
+                        <span style="font-size: 11px; color: #64748b;">Financial Verification</span>
+                    </label>
+                    <input type="file" id="doc-income" accept=".pdf,.jpg,.jpeg,.png">
+                </div>
+
+                <div class="doc-upload-box">
+                    <label for="doc-marks">
+                        <span>Marks Memo / Transcripts *</span>
+                        <span style="font-size: 11px; color: #64748b;">Academic Verification (HOD)</span>
+                    </label>
+                    <input type="file" id="doc-marks" accept=".pdf,.jpg,.jpeg,.png">
+                </div>
+
+                <div class="doc-upload-box">
+                    <label for="doc-bonafide">
+                        <span>College Study / Bonafide Certificate *</span>
+                        <span style="font-size: 11px; color: #64748b;">Institution Verification (Principal)</span>
+                    </label>
+                    <input type="file" id="doc-bonafide" accept=".pdf,.jpg,.jpeg,.png">
+                </div>
+            </div>
+
+            <div id="submitAlert" style="display: none; padding: 12px; margin-bottom: 15px; border-radius: 6px; font-weight: 500;"></div>
+
+            <button type="submit" class="btn" id="submitAppBtn" style="width: 100%; padding: 12px; font-size: 16px;">
+                Submit Scholarship Application &rarr;
+            </button>
+        </form>
+    </section>
+
+    <footer>
+        <p>© 2026 Student Scholarship Management Portal</p>
+    </footer>
+
+    <script>
+        const schSelect = document.getElementById("app-scholarship-select");
+        const schIdInput = document.getElementById("app-scholarship-id");
+        const schNameInput = document.getElementById("app-scholarship-name");
+        const schDetailHint = document.getElementById("schDetailHint");
+
+        // Load active scholarships dynamically from MySQL
+        async function loadScholarshipOptions() {
+            try {
+                const res = await fetch("/api/scholarships");
+                const data = await res.json();
+                const schemes = data.scholarships || [];
+
+                schSelect.innerHTML = `<option value="">-- Choose a Scholarship Scheme --</option>`;
+                schemes.forEach(s => {
+                    const opt = document.createElement("option");
+                    opt.value = s.id;
+                    opt.textContent = `${s.name} (₹${Number(s.amount).toLocaleString("en-IN")}/yr) - ${s.category}`;
+                    opt.dataset.name = s.name;
+                    opt.dataset.amount = s.amount;
+                    opt.dataset.eligibility = s.eligibility;
+                    schSelect.appendChild(opt);
+                });
+
+                // Check URL parameter
+                const urlParams = new URLSearchParams(window.location.search);
+                const paramSchId = urlParams.get("scholarship_id");
+                if (paramSchId) {
+                    schSelect.value = paramSchId;
+                    const selected = schSelect.options[schSelect.selectedIndex];
+                    if (selected) {
+                        schIdInput.value = paramSchId;
+                        schNameInput.value = selected.dataset.name || "";
+                        schDetailHint.textContent = `Grant: ₹${Number(selected.dataset.amount).toLocaleString("en-IN")} | Eligibility: ${selected.dataset.eligibility}`;
+                    }
+                }
+            } catch (err) {
+                schSelect.innerHTML = `<option value="">Failed to load schemes from server</option>`;
+            }
+        }
+
+        schSelect.addEventListener("change", function () {
+            const selectedOpt = this.options[this.selectedIndex];
+            if (this.value) {
+                schIdInput.value = this.value;
+                schNameInput.value = selectedOpt.dataset.name || selectedOpt.text;
+                schDetailHint.textContent = `Grant: ₹${Number(selectedOpt.dataset.amount || 0).toLocaleString("en-IN")} | Criteria: ${selectedOpt.dataset.eligibility || ""}`;
+            } else {
+                schIdInput.value = "";
+                schNameInput.value = "";
+                schDetailHint.textContent = "";
+            }
+        });
+
+        loadScholarshipOptions();
+
+        // Check for logged in student
+        const studentRaw = localStorage.getItem("student");
+        const authNotice = document.getElementById("authNotice");
+        const loginPrompt = document.getElementById("loginPrompt");
+        const studentIdField = document.getElementById("app-student-id");
+        const nameField = document.getElementById("app-name");
+        const collegeField = document.getElementById("app-college");
+        const courseField = document.getElementById("app-course");
+        const incomeField = document.getElementById("app-income");
+        const navAuth = document.getElementById("navAuth");
+
+        if (studentRaw) {
+            try {
+                const student = JSON.parse(studentRaw);
+                authNotice.style.display = "block";
+                document.getElementById("loggedStudentName").textContent = student.name;
+                document.getElementById("loggedStudentId").textContent = student.id;
+
+                studentIdField.value = student.id;
+                nameField.value = student.name || "";
+                collegeField.value = student.college || "";
+                courseField.value = student.course || "";
+                if (student.annual_income) {
+                    incomeField.value = student.annual_income;
+                }
+
+                if (navAuth) {
+                    navAuth.textContent = `Logout (${student.name.split(" ")[0]})`;
+                    navAuth.href = "#";
+                    navAuth.onclick = (e) => {
+                        e.preventDefault();
+                        localStorage.removeItem("student");
+                        window.location.reload();
+                    };
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        } else {
+            loginPrompt.style.display = "block";
+        }
+
+        // Handle multipart form submission
+        const form = document.getElementById("scholarshipApplicationForm");
+        const submitAlert = document.getElementById("submitAlert");
+        const submitBtn = document.getElementById("submitAppBtn");
+
+        form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const studentId = studentIdField.value.trim();
+            const scholarshipId = schIdInput.value || schSelect.value;
+            const scholarshipName = schNameInput.value || (schSelect.selectedIndex > 0 ? schSelect.options[schSelect.selectedIndex].dataset.name : "");
+            const percentage = document.getElementById("app-percentage").value.trim();
+            const income = document.getElementById("app-income").value.trim();
+
+            if (!studentId) {
+                showAlert("Please enter your registered Student ID.", "error");
+                return;
+            }
+
+            if (!scholarshipName) {
+                showAlert("Please select a scholarship scheme.", "error");
+                return;
+            }
+
+            if (!percentage || Number(percentage) < 0 || Number(percentage) > 100) {
+                showAlert("Please enter a valid percentage between 0 and 100.", "error");
+                return;
+            }
+
+            if (!income || Number(income) < 0) {
+                showAlert("Please enter a valid annual income.", "error");
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Uploading Documents & Submitting...";
+
+            try {
+                const formData = new FormData();
+                formData.append("student_id", studentId);
+                formData.append("scholarship_id", scholarshipId);
+                formData.append("scholarship_name", scholarshipName);
+                formData.append("academic_percentage", percentage);
+                formData.append("annual_income", income);
+
+                // Append documents if selected
+                const aadharFile = document.getElementById("doc-aadhar").files[0];
+                const incomeFile = document.getElementById("doc-income").files[0];
+                const marksFile = document.getElementById("doc-marks").files[0];
+                const bonafideFile = document.getElementById("doc-bonafide").files[0];
+
+                if (aadharFile) formData.append("aadhar", aadharFile);
+                if (incomeFile) formData.append("income_cert", incomeFile);
+                if (marksFile) formData.append("marks", marksFile);
+                if (bonafideFile) formData.append("bonafide", bonafideFile);
+
+                const response = await fetch("/api/applications", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert(`🎉 Success! Application submitted into Level 1. Tracking ID: ${data.trackingId}`, "success");
+                    localStorage.setItem("lastTrackingId", data.trackingId);
+                    
+                    setTimeout(() => {
+                        window.location.href = `dashboard.html`;
+                    }, 1800);
+                } else {
+                    showAlert(data.message || "Failed to submit application. Please verify details.", "error");
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "Submit Scholarship Application \u2192";
+                }
+            } catch (err) {
+                console.error("Submission error:", err);
+                showAlert("Server connection failed. Please ensure the backend is running.", "error");
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Submit Scholarship Application \u2192";
+            }
+        });
+
+        function showAlert(msg, type) {
+            submitAlert.style.display = "block";
+            submitAlert.textContent = msg;
+            if (type === "success") {
+                submitAlert.style.background = "#dcfce7";
+                submitAlert.style.color = "#166534";
+                submitAlert.style.border = "1px solid #86efac";
+            } else {
+                submitAlert.style.background = "#fee2e2";
+                submitAlert.style.color = "#991b1b";
+                submitAlert.style.border = "1px solid #fca5a5";
+            }
+        }
+    </script>
+
+</body>
+</html>

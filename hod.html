@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty / HOD Portal - Level 2 Academic Verification</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/register.css">
+    <style>
+        .dashboard-container {
+            max-width: 1250px;
+            margin: 30px auto;
+            padding: 0 20px 40px 20px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: #ffffff;
+            padding: 22px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            text-align: center;
+        }
+        .stat-card h4 {
+            margin: 0;
+            font-size: 13px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stat-card .num {
+            font-size: 34px;
+            font-weight: 800;
+            margin: 10px 0;
+        }
+        .filter-bar {
+            background: #ffffff;
+            padding: 16px 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .filter-bar input {
+            flex: 1;
+            min-width: 250px;
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .table-responsive {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            overflow-x: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            text-align: left;
+        }
+        th {
+            background: #f8fafc;
+            color: #334155;
+            font-weight: 600;
+            padding: 14px 16px;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            vertical-align: middle;
+        }
+        tr:hover {
+            background: #f8fafc;
+        }
+        .btn-action {
+            padding: 7px 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-recommend {
+            background: #059669;
+            color: #ffffff;
+        }
+        .btn-recommend:hover {
+            background: #047857;
+        }
+        .btn-reject-action {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fca5a5;
+        }
+        .btn-reject-action:hover {
+            background: #fecaca;
+        }
+        .btn-history {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+        }
+        .doc-chip {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #eff6ff;
+            color: #2563eb;
+            border-radius: 4px;
+            font-size: 12px;
+            text-decoration: none;
+            margin: 2px;
+            border: 1px solid #bfdbfe;
+        }
+        .doc-chip:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <h2>🎓 Faculty / HOD Portal <span style="font-size: 12px; background: #fef3c7; color: #b45309; padding: 3px 8px; border-radius: 12px; vertical-align: middle;">Level 2 Approver</span></h2>
+            <div class="nav-links">
+                <a href="officer.html">Officer Portal</a>
+                <a href="hod.html" class="active">HOD Dashboard</a>
+                <a href="principal.html">Principal Portal</a>
+                <a href="admin.html">Admin</a>
+                <button id="logoutBtn" style="background: transparent; border: 1px solid #cbd5e1; color: #334155; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">Logout</button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="dashboard-container">
+        
+        <!-- Welcome Bar -->
+        <div style="background: linear-gradient(135deg, #065f46, #059669); color: #ffffff; padding: 22px 28px; border-radius: 12px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h2 style="margin: 0; font-size: 22px;">Welcome, <span id="hodName">Dr. A. Sharma (HOD)</span> 👨‍🏫</h2>
+                <p style="margin: 4px 0 0 0; opacity: 0.9; font-size: 14px;">Level 2 Academic Review: Verify academic performance, attendance record, and Officer remarks, then recommend to the Principal.</p>
+            </div>
+            <div>
+                <button class="btn" id="refreshBtn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); padding: 9px 18px; font-size: 13px;">🔄 Refresh Records</button>
+            </div>
+        </div>
+
+        <!-- Metric Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h4>Pending at HOD</h4>
+                <div class="num" id="statPending" style="color: #b45309;">0</div>
+                <p style="font-size: 12px; color: #64748b; margin: 0;">Awaiting Academic Review</p>
+            </div>
+            <div class="stat-card">
+                <h4>Recommended to Principal</h4>
+                <div class="num" id="statRecommended" style="color: #059669;">0</div>
+                <p style="font-size: 12px; color: #64748b; margin: 0;">Advanced to Level 3</p>
+            </div>
+            <div class="stat-card">
+                <h4>Rejected at HOD</h4>
+                <div class="num" id="statRejected" style="color: #dc2626;">0</div>
+                <p style="font-size: 12px; color: #64748b; margin: 0;">Academic Criteria Unmet</p>
+            </div>
+        </div>
+
+        <div id="alertBox" style="display: none; padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; font-weight: 500;"></div>
+
+        <!-- Filter and Search -->
+        <div class="filter-bar">
+            <input type="text" id="searchInput" placeholder="Search by student name, tracking ID, department, or scheme...">
+            <div style="font-size: 13px; color: #64748b;">
+                Showing applications forwarded from Scholarship Officer: <strong>Pending at HOD</strong>
+            </div>
+        </div>
+
+        <!-- Applications Table -->
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tracking ID</th>
+                        <th>Student Profile</th>
+                        <th>Scholarship</th>
+                        <th>Academic %</th>
+                        <th>Officer Remarks</th>
+                        <th>Documents</th>
+                        <th>Current Status</th>
+                        <th>HOD Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="hodTableBody">
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 40px; color: #64748b;">
+                            Loading applications forwarded to HOD...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- RECOMMEND TO PRINCIPAL MODAL -->
+    <div class="modal-overlay" id="recommendModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Level 2: Recommend to Principal</h3>
+                <button class="modal-close-btn" onclick="closeModal('recommendModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="color: #475569; font-size: 14px; margin-bottom: 15px;">
+                    Reviewing academic recommendation for <strong id="recStudentName" style="color: #0f172a;"></strong> (<span id="recTrackingId"></span>).
+                </p>
+                <div style="background: #f8fafc; padding: 14px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #e2e8f0; font-size: 13px; line-height: 1.6;">
+                    <div><strong>College / Course:</strong> <span id="recCollegeCourse"></span></div>
+                    <div><strong>Academic Percentage:</strong> <span id="recPercentage" style="font-weight: bold; color: #059669;"></span>%</div>
+                    <div><strong>Officer's Verification Note:</strong> <span id="recOfficerRemarks" style="color: #2563eb;"></span></div>
+                </div>
+
+                <label style="font-weight: 600; font-size: 14px; display: block; margin-bottom: 6px;">HOD Academic Remarks *</label>
+                <textarea id="hodRemarksInput" rows="3" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 14px;" placeholder="e.g. Verified student semester marks and good conduct. Department recommends candidate for final institutional approval."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" style="background: #f1f5f9; color: #475569;" onclick="closeModal('recommendModal')">Cancel</button>
+                <button class="btn btn-recommend" id="confirmRecBtn" onclick="submitRecommend()">Confirm & Recommend to Principal &rarr;</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- REJECT MODAL -->
+    <div class="modal-overlay" id="rejectModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 style="color: #b91c1c;">Level 2: Reject Application</h3>
+                <button class="modal-close-btn" onclick="closeModal('rejectModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="color: #475569; font-size: 14px; margin-bottom: 15px;">
+                    Reject application for <strong id="rejStudentName"></strong> (<span id="rejTrackingId"></span>).
+                </p>
+                <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 13px; color: #991b1b;">
+                    ⚠️ Rejecting will stop this application. The reason will be clearly displayed to the student.
+                </div>
+
+                <label style="font-weight: 600; font-size: 14px; display: block; margin-bottom: 6px;">HOD Rejection Reason *</label>
+                <textarea id="rejectionReasonInput" rows="3" style="width: 100%; padding: 10px; border: 1px solid #fca5a5; border-radius: 6px; font-family: inherit; font-size: 14px;" placeholder="e.g. Academic percentage does not satisfy minimum department threshold (minimum 65% required)."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" style="background: #f1f5f9; color: #475569;" onclick="closeModal('rejectModal')">Cancel</button>
+                <button class="btn" style="background: #dc2626; color: #ffffff;" id="confirmRejectBtn" onclick="submitReject()">Confirm Rejection</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUDIT HISTORY MODAL -->
+    <div class="modal-overlay" id="historyModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>📋 Complete 4-Level Approval History</h3>
+                <button class="modal-close-btn" onclick="closeModal('historyModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="historyTrackingBadge" style="font-family: monospace; font-size: 14px; font-weight: bold; color: #2563eb; margin-bottom: 15px;"></div>
+                <div class="audit-timeline" id="historyTimeline"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" style="background: #f1f5f9; color: #475569;" onclick="closeModal('historyModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Student Scholarship Management Portal - Faculty & HOD Suite</p>
+    </footer>
+
+    <script>
+        let hodApps = [];
+        let activeApp = null;
+        let currentUser = null;
+
+        // Check authentication
+        const staffRaw = localStorage.getItem("staffUser");
+        if (staffRaw) {
+            try {
+                currentUser = JSON.parse(staffRaw);
+                document.getElementById("hodName").textContent = currentUser.name || "Dr. A. Sharma (HOD)";
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            localStorage.removeItem("staffUser");
+            localStorage.removeItem("staffToken");
+            window.location.href = "login.html";
+        });
+
+        document.getElementById("refreshBtn").addEventListener("click", () => {
+            loadHodData();
+            showAlert("Refreshed HOD pending records.", "success");
+        });
+
+        document.getElementById("searchInput").addEventListener("input", renderTable);
+
+        async function loadHodData() {
+            try {
+                // Load stats
+                const statsRes = await fetch("/api/hod/stats");
+                const statsData = await statsRes.json();
+                if (statsData.stats) {
+                    document.getElementById("statPending").textContent = statsData.stats.pending_hod || 0;
+                    document.getElementById("statRecommended").textContent = statsData.stats.recommended_principal || 0;
+                    document.getElementById("statRejected").textContent = statsData.stats.rejected_hod || 0;
+                }
+
+                // Load applications
+                const res = await fetch("/api/hod/applications");
+                const data = await res.json();
+                hodApps = data.applications || [];
+                renderTable();
+            } catch (err) {
+                console.error(err);
+                showAlert("Error loading HOD applications from backend.", "error");
+            }
+        }
+
+        function renderTable() {
+            const query = document.getElementById("searchInput").value.toLowerCase().trim();
+            const filtered = hodApps.filter(app => {
+                return !query ||
+                    (app.tracking_id && app.tracking_id.toLowerCase().includes(query)) ||
+                    (app.full_name && app.full_name.toLowerCase().includes(query)) ||
+                    (app.college && app.college.toLowerCase().includes(query)) ||
+                    (app.course && app.course.toLowerCase().includes(query)) ||
+                    (app.scholarship_name && app.scholarship_name.toLowerCase().includes(query));
+            });
+
+            const tbody = document.getElementById("hodTableBody");
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr><td colspan="9" style="text-align: center; padding: 40px; color: #64748b;">
+                        🎉 No pending applications awaiting HOD review right now!
+                    </td></tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = "";
+            filtered.forEach(app => {
+                const tr = document.createElement("tr");
+
+                let docLinks = "";
+                if (app.aadhar_doc) docLinks += `<a href="/uploads/${app.aadhar_doc}" target="_blank" class="doc-chip">📄 Aadhar</a>`;
+                if (app.income_doc) docLinks += `<a href="/uploads/${app.income_doc}" target="_blank" class="doc-chip">💰 Income</a>`;
+                if (app.marks_doc) docLinks += `<a href="/uploads/${app.marks_doc}" target="_blank" class="doc-chip">📈 Marks</a>`;
+                if (app.bonafide_doc) docLinks += `<a href="/uploads/${app.bonafide_doc}" target="_blank" class="doc-chip">🏛️ Bonafide</a>`;
+                if (!docLinks) docLinks = `<span style="color: #94a3b8; font-size: 12px;">No files</span>`;
+
+                tr.innerHTML = `
+                    <td style="font-weight: bold; color: #64748b;">#${app.id}</td>
+                    <td><span style="font-family: monospace; font-weight: bold; color: #2563eb; background: #eff6ff; padding: 3px 6px; border-radius: 4px;">${escapeHtml(app.tracking_id)}</span></td>
+                    <td>
+                        <div style="font-weight: 700; color: #0f172a;">${escapeHtml(app.full_name)}</div>
+                        <div style="font-size: 12px; color: #64748b;">${escapeHtml(app.email)} | ${escapeHtml(app.phone || "")}</div>
+                        <div style="font-size: 12px; color: #475569;">${escapeHtml(app.college || "")} (${escapeHtml(app.course || "")})</div>
+                    </td>
+                    <td>
+                        <div style="font-weight: 600;">${escapeHtml(app.scholarship_name)}</div>
+                        <div style="font-size: 12px; color: #64748b;">${escapeHtml(app.scholarship_id || "")}</div>
+                    </td>
+                    <td><span style="font-weight: 700; color: #059669; font-size: 15px;">${app.academic_percentage}%</span></td>
+                    <td style="max-width: 220px; font-size: 12px; color: #334155; line-height: 1.4;">
+                        ${escapeHtml(app.officer_remarks || "Verified & forwarded by Officer")}
+                    </td>
+                    <td>${docLinks}</td>
+                    <td><span class="badge badge-pending-at-hod">${escapeHtml(app.status)}</span></td>
+                    <td>
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                            <button class="btn-action btn-recommend" onclick="openRecommendModal(${app.id})">Recommend &rarr;</button>
+                            <button class="btn-action btn-reject-action" onclick="openRejectModal(${app.id})">Reject</button>
+                            <button class="btn-action btn-history" onclick="viewHistory(${app.id}, '${escapeHtml(app.tracking_id)}')">History</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openRecommendModal(id) {
+            activeApp = hodApps.find(a => a.id === id);
+            if (!activeApp) return;
+
+            document.getElementById("recStudentName").textContent = activeApp.full_name;
+            document.getElementById("recTrackingId").textContent = activeApp.tracking_id;
+            document.getElementById("recCollegeCourse").textContent = `${activeApp.college || ""} - ${activeApp.course || ""}`;
+            document.getElementById("recPercentage").textContent = activeApp.academic_percentage;
+            document.getElementById("recOfficerRemarks").textContent = activeApp.officer_remarks || "Verified eligibility & certificates.";
+            document.getElementById("hodRemarksInput").value = "Verified academic records and attendance. Student demonstrates high discipline. Recommended for Principal approval.";
+
+            document.getElementById("recommendModal").style.display = "flex";
+        }
+
+        async function submitRecommend() {
+            if (!activeApp) return;
+            const remarks = document.getElementById("hodRemarksInput").value.trim();
+            const btn = document.getElementById("confirmRecBtn");
+            btn.disabled = true;
+            btn.textContent = "Recommending...";
+
+            try {
+                const res = await fetch(`/api/hod/applications/${activeApp.id}/recommend`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        hod_name: currentUser ? currentUser.name : "Dr. A. Sharma (HOD)",
+                        remarks: remarks
+                    })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    closeModal("recommendModal");
+                    showAlert(`Application #${activeApp.id} recommended to Principal successfully!`, "success");
+                    loadHodData();
+                } else {
+                    showAlert(data.message || "Failed to recommend application.", "error");
+                }
+            } catch (err) {
+                console.error(err);
+                showAlert("Network error during recommendation.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Confirm & Recommend to Principal \u2192";
+            }
+        }
+
+        function openRejectModal(id) {
+            activeApp = hodApps.find(a => a.id === id);
+            if (!activeApp) return;
+
+            document.getElementById("rejStudentName").textContent = activeApp.full_name;
+            document.getElementById("rejTrackingId").textContent = activeApp.tracking_id;
+            document.getElementById("rejectionReasonInput").value = "";
+
+            document.getElementById("rejectModal").style.display = "flex";
+        }
+
+        async function submitReject() {
+            if (!activeApp) return;
+            const reason = document.getElementById("rejectionReasonInput").value.trim();
+            if (!reason) {
+                alert("Please specify a rejection reason.");
+                return;
+            }
+
+            const btn = document.getElementById("confirmRejectBtn");
+            btn.disabled = true;
+            btn.textContent = "Processing rejection...";
+
+            try {
+                const res = await fetch(`/api/hod/applications/${activeApp.id}/reject`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        hod_name: currentUser ? currentUser.name : "Dr. A. Sharma (HOD)",
+                        reason: reason
+                    })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    closeModal("rejectModal");
+                    showAlert(`Application #${activeApp.id} rejected at HOD level. Reason logged.`, "success");
+                    loadHodData();
+                } else {
+                    showAlert(data.message || "Failed to reject application.", "error");
+                }
+            } catch (err) {
+                console.error(err);
+                showAlert("Network error during rejection.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Confirm Rejection";
+            }
+        }
+
+        async function viewHistory(appId, trackingId) {
+            document.getElementById("historyTrackingBadge").textContent = `Tracking ID: ${trackingId}`;
+            const timeline = document.getElementById("historyTimeline");
+            timeline.innerHTML = "<p>Loading history records...</p>";
+            document.getElementById("historyModal").style.display = "flex";
+
+            try {
+                const res = await fetch(`/api/applications/${appId}/history`);
+                const data = await res.json();
+                const history = data.history || [];
+
+                if (history.length === 0) {
+                    timeline.innerHTML = "<p style='color: #64748b;'>No audit history logs recorded yet.</p>";
+                    return;
+                }
+
+                timeline.innerHTML = "";
+                history.forEach(h => {
+                    const eventDiv = document.createElement("div");
+                    eventDiv.className = "timeline-event";
+                    const isReject = h.action.toLowerCase().includes("reject");
+                    const isApproved = h.action.toLowerCase().includes("approv") || h.action.toLowerCase().includes("paid");
+
+                    let dotClass = "timeline-dot";
+                    if (isReject) dotClass += " rejected";
+                    else if (isApproved) dotClass += " completed";
+
+                    const timeStr = new Date(h.timestamp).toLocaleString("en-IN", {
+                        day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
+                    });
+
+                    eventDiv.innerHTML = `
+                        <div class="${dotClass}"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-time">${timeStr}</span>
+                            <div style="font-weight: 700; color: #0f172a; margin-bottom: 2px;">
+                                [${escapeHtml(h.stage)}] ${escapeHtml(h.action)}
+                            </div>
+                            <div style="font-size: 12px; color: #475569; margin-bottom: 6px;">
+                                By: <strong>${escapeHtml(h.actor_name)}</strong> (${escapeHtml(h.actor_role)})
+                            </div>
+                            <div style="font-size: 13px; color: #334155; background: #ffffff; padding: 8px 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                                "${escapeHtml(h.remarks || "No remarks.")}"
+                            </div>
+                        </div>
+                    `;
+                    timeline.appendChild(eventDiv);
+                });
+            } catch (err) {
+                timeline.innerHTML = "<p style='color: #dc2626;'>Failed to load history.</p>";
+            }
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = "none";
+        }
+
+        function showAlert(msg, type) {
+            const box = document.getElementById("alertBox");
+            box.style.display = "block";
+            box.textContent = msg;
+            if (type === "success") {
+                box.style.background = "#dcfce7";
+                box.style.color = "#166534";
+                box.style.border = "1px solid #86efac";
+            } else {
+                box.style.background = "#fee2e2";
+                box.style.color = "#991b1b";
+                box.style.border = "1px solid #fca5a5";
+            }
+            setTimeout(() => { box.style.display = "none"; }, 5000);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return "";
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        loadHodData();
+    </script>
+</body>
+</html>
